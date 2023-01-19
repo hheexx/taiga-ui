@@ -40,9 +40,9 @@ import {
 } from './input-password-options';
 
 @Component({
-    selector: `tui-input-password`,
-    templateUrl: `./input-password.template.html`,
-    styleUrls: [`./input-password.style.less`],
+    selector: 'tui-input-password',
+    templateUrl: './input-password.template.html',
+    styleUrls: ['./input-password.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiInputPasswordComponent),
@@ -62,17 +62,17 @@ export class TuiInputPasswordComponent
     isPasswordHidden = true;
 
     readonly computedAppearance$: Observable<string> = combineLatest([
-        this.mode$.pipe(map(val => (val === `onDark` ? `onDark` : ``))),
+        this.mode$.pipe(map(val => (val === 'onDark' ? 'onDark' : ''))),
         this.directive$.pipe(
             startWith(null),
-            map(() => this.hintOptions?.appearance || ``),
+            map(() => this.hintOptions?.appearance || ''),
         ),
     ]).pipe(
         map(([mode, controller]) => controller || mode),
-        startWith(``),
+        startWith(''),
     );
 
-    readonly type!: TuiContextWithImplicit<TuiSizeS | TuiSizeL>;
+    readonly type!: TuiContextWithImplicit<TuiSizeL | TuiSizeS>;
 
     constructor(
         @Optional()
@@ -105,16 +105,16 @@ export class TuiInputPasswordComponent
         return !!this.textfield && this.textfield.focused;
     }
 
-    get icon(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeS | TuiSizeL>> {
+    get icon(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeL | TuiSizeS>> {
         return this.isPasswordHidden ? this.options.icons.hide : this.options.icons.show;
     }
 
-    get context(): TuiContextWithImplicit<TuiSizeS | TuiSizeL> {
+    get context(): TuiContextWithImplicit<TuiSizeL | TuiSizeS> {
         return this.getContext(this.textfieldSize.size);
     }
 
     get inputType(): TuiInputType {
-        return this.isPasswordHidden || !this.interactive ? `password` : `text`;
+        return this.isPasswordHidden || !this.interactive ? 'password' : 'text';
     }
 
     onValueChange(textValue: string): void {
@@ -130,13 +130,13 @@ export class TuiInputPasswordComponent
     }
 
     protected getFallbackValue(): string {
-        return ``;
+        return '';
     }
 
     @tuiPure
     private getContext(
-        $implicit: TuiSizeS | TuiSizeL,
-    ): TuiContextWithImplicit<TuiSizeS | TuiSizeL> {
+        $implicit: TuiSizeL | TuiSizeS,
+    ): TuiContextWithImplicit<TuiSizeL | TuiSizeS> {
         return {$implicit};
     }
 }

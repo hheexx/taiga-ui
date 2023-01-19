@@ -47,6 +47,7 @@
     <div class="t-years-wrapper">
         <button
             *cdkVirtualFor="let index of years"
+            type="button"
             class="t-year"
             [attr.data-state]="getState(index)"
             (click)="setYear(index)"
@@ -57,7 +58,7 @@
 </cdk-virtual-scroll-viewport>
 <div class="t-week">
     <div
-        *ngFor="let day of weekDays$ | async"
+        *ngFor="let day of unorderedWeekDays$ | tuiOrderWeekDays | async"
         class="t-day"
     >
         {{ day }}
@@ -77,7 +78,7 @@
             class="t-calendar"
             [month]="month"
             [value]="value"
-            [disabledItemHandler]="disabledItemHandler | tuiMapper: disabledItemHandlerMapper:min:max"
+            [disabledItemHandler]="disabledItemHandler | tuiMapper : disabledItemHandlerMapper : min : max"
             (dayClick)="onDayClick($event)"
         ></tui-primitive-calendar-mobile>
     </section>

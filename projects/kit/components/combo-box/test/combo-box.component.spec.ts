@@ -17,15 +17,13 @@ import {
     TuiSizeS,
     TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
+import {TuiComboBoxComponent, TuiComboBoxModule} from '@taiga-ui/kit';
 import {
     TUI_ARROW,
     TUI_ARROW_MODE,
     TuiDataListWrapperModule,
 } from '@taiga-ui/kit/components';
 import {configureTestSuite, TuiNativeInputPO, TuiPageObject} from '@taiga-ui/testing';
-
-import {TuiComboBoxComponent} from '../combo-box.component';
-import {TuiComboBoxModule} from '../combo-box.module';
 
 class Beast {
     constructor(readonly species: string, readonly trait: string, readonly id: string) {}
@@ -73,13 +71,13 @@ describe(`ComboBox`, () => {
     })
     class TestComponent {
         @ViewChild(TuiComboBoxComponent, {static: true})
-        component!: TuiComboBoxComponent<string | Beast>;
+        component!: TuiComboBoxComponent<Beast | string>;
 
         items = ITEMS;
         control = new FormControl();
         defaultInputs = false;
         cleaner = false;
-        size: TuiSizeS | TuiSizeL = `m`;
+        size: TuiSizeL | TuiSizeS = `m`;
         readOnly = false;
         hintContent: string | null = `prompt`;
 

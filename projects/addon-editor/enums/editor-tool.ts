@@ -1,5 +1,6 @@
 export enum TuiEditorTool {
     Undo = `undo`,
+    Anchor = `anchor`,
     Size = `fontSize`,
     Bold = `bold`,
     Italic = `italic`,
@@ -12,7 +13,7 @@ export enum TuiEditorTool {
     Hilite = `hiliteColor`,
     Clear = `clear`,
     Link = `link`,
-    Attach = `attach`, // Todo
+    Attach = `attach`,
     Tex = `tex`, // Todo
     Code = `code`,
     Img = `image`,

@@ -10,9 +10,9 @@
         automation-id="tui-multi-select__input"
         class="t-input"
         [nativeId]="nativeId"
-        [tuiTextfieldIcon]="tagIcon"
+        [tuiTextfieldIcon]="icon"
         [disabled]="disabled"
-        [disabledItemHandler]="disabledItemHandler | tuiMapper: disabledItemHandlerWrapper"
+        [disabledItemHandler]="disabledItemHandler | tuiMapper : disabledItemHandlerWrapper"
         [readOnly]="readOnly"
         [inputHidden]="!editable"
         [pseudoHover]="pseudoHover"
@@ -22,7 +22,8 @@
         [editable]="false"
         [expandable]="expandable"
         [search]="searchOrSpace"
-        [ngModel]="computedValue | tuiMapper: valueMapper:stringify"
+        [rows]="rows"
+        [ngModel]="computedValue | tuiMapper : valueMapper : stringify"
         (ngModelChange)="onInput($event)"
         (searchChange)="onSearch($event)"
         (keydown.space)="onSpace($event)"
@@ -45,16 +46,17 @@
             </ng-container>
         </div>
 
-        <div
-            *ngIf="arrow"
-            automation-id="tui-multi-select__arrow"
-            tuiPreventDefault="mousedown"
-            class="t-arrow"
-            (click.prevent)="onArrowClick()"
-        >
-            <ng-container *polymorpheusOutlet="arrow as text">
-                {{ text }}
-            </ng-container>
-        </div>
+        <ng-template #icon>
+            <div
+                *ngIf="arrow"
+                automation-id="tui-multi-select__arrow"
+                tuiPreventDefault="mousedown"
+                class="t-arrow"
+            >
+                <ng-container *polymorpheusOutlet="arrow as text">
+                    {{ text }}
+                </ng-container>
+            </div>
+        </ng-template>
     </div>
 </tui-hosted-dropdown>

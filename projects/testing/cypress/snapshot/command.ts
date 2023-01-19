@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
-
+// eslint-disable-next-line @taiga-ui/no-deep-imports
+import {tuiIsObject, tuiIsString} from '@taiga-ui/cdk/utils/miscellaneous';
 import {Options} from 'cypress-image-snapshot';
 import {matchImageSnapshotCommand} from 'cypress-image-snapshot/command';
 
@@ -37,11 +38,10 @@ export function tuiAddMatchImageSnapshotCommand(
             nameOrOptions: string | (Options & TuiSnapshotCommandOptions),
             options?: Options & TuiSnapshotCommandOptions,
         ) => {
-            const name = typeof nameOrOptions === `string` ? nameOrOptions : undefined;
-            const overloadedOptions =
-                typeof nameOrOptions === `object` && !!nameOrOptions
-                    ? nameOrOptions
-                    : options;
+            const name = tuiIsString(nameOrOptions) ? nameOrOptions : undefined;
+            const overloadedOptions = tuiIsObject(nameOrOptions)
+                ? nameOrOptions
+                : options;
 
             tuiWaitAllImgInside(prevSubject, overloadedOptions?.waitAllImages ?? true);
 
@@ -50,20 +50,13 @@ export function tuiAddMatchImageSnapshotCommand(
     );
 }
 
-const globalScreenshotsInfo = new Map<string, number>();
-
 function makeScreenshotName(name?: string): string {
-    const screenshot =
+    return (
         name ??
         Cypress.currentTest.titlePath
             .join(`-`)
             .replace(/\s|-/g, `.`)
             .replace(/['[\]`()]/g, ``)
-            .toLowerCase();
-    const index: number | undefined = globalScreenshotsInfo.get(screenshot);
-    const screenshotId = (index || 0) + 1;
-
-    globalScreenshotsInfo.set(screenshot, screenshotId);
-
-    return `${screenshotId}-${screenshot}`;
+            .toLowerCase()
+    );
 }

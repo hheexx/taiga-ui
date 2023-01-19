@@ -12,11 +12,10 @@ import {NgControl} from '@angular/forms';
 import {
     AbstractTuiNullableControl,
     ALWAYS_FALSE_HANDLER,
-    TUI_FIRST_DAY,
-    TUI_LAST_DAY,
     tuiAsControl,
     tuiAsFocusableItemAccessor,
     TuiBooleanHandler,
+    tuiDateClamp,
     TuiDay,
     tuiDefaultProp,
     TuiFocusableElementAccessor,
@@ -25,21 +24,22 @@ import {
     TuiYear,
 } from '@taiga-ui/cdk';
 import {
-    TUI_TEXTFIELD_SIZE,
     TuiMonthPipe,
     TuiPrimitiveTextfieldComponent,
-    tuiSizeBigger,
-    TuiTextfieldSizeDirective,
     TuiWithOptionalMinMax,
 } from '@taiga-ui/core';
 import {TUI_MONTH_FORMATTER_PROVIDER} from '@taiga-ui/kit/providers';
-import {TUI_MONTH_FORMATTER} from '@taiga-ui/kit/tokens';
+import {
+    TUI_INPUT_DATE_OPTIONS,
+    TUI_MONTH_FORMATTER,
+    TuiInputDateOptions,
+} from '@taiga-ui/kit/tokens';
 import {Observable} from 'rxjs';
 
 @Component({
-    selector: `tui-input-month`,
-    templateUrl: `./input-month.template.html`,
-    styleUrls: [`./input-month.style.less`],
+    selector: 'tui-input-month',
+    templateUrl: './input-month.template.html',
+    styleUrls: ['./input-month.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiInputMonthComponent),
@@ -57,18 +57,23 @@ export class TuiInputMonthComponent
 
     @Input()
     @tuiDefaultProp()
-    min: TuiMonth = TUI_FIRST_DAY;
+    min: TuiMonth = this.options.min;
 
     @Input()
     @tuiDefaultProp()
-    max: TuiMonth = TUI_LAST_DAY;
+    max: TuiMonth = this.options.max;
 
     @Input()
     @tuiDefaultProp()
     disabledItemHandler: TuiBooleanHandler<TuiMonth> = ALWAYS_FALSE_HANDLER;
 
+    @Input()
+    @tuiDefaultProp()
+    defaultActiveYear: TuiYear = TuiDay.currentLocal();
+
+    activeYear?: TuiYear;
+
     open = false;
-    activeYear: TuiYear = this.value || TuiDay.currentLocal();
 
     constructor(
         @Optional()
@@ -76,10 +81,10 @@ export class TuiInputMonthComponent
         @Inject(NgControl)
         control: NgControl | null,
         @Inject(ChangeDetectorRef) changeDetectorRef: ChangeDetectorRef,
-        @Inject(TUI_TEXTFIELD_SIZE)
-        private readonly textfieldSize: TuiTextfieldSizeDirective,
         @Inject(TUI_MONTH_FORMATTER)
         readonly formatter: TuiHandler<TuiMonth | null, Observable<string>>,
+        @Inject(TUI_INPUT_DATE_OPTIONS)
+        private readonly options: TuiInputDateOptions,
     ) {
         super(control, changeDetectorRef);
     }
@@ -88,14 +93,20 @@ export class TuiInputMonthComponent
         return this.textfield ? this.textfield.nativeFocusableElement : null;
     }
 
+    get computedDefaultActiveYear(): TuiYear {
+        return (
+            this.activeYear ||
+            this.value ||
+            tuiDateClamp(this.defaultActiveYear, this.min, this.max)
+        );
+    }
+
     get focused(): boolean {
         return !!this.textfield && this.textfield.focused;
     }
 
-    get calendarIcon(): string {
-        return tuiSizeBigger(this.textfieldSize.size)
-            ? `tuiIconCalendarLarge`
-            : `tuiIconCalendar`;
+    get calendarIcon(): TuiInputDateOptions['icon'] {
+        return this.options.icon;
     }
 
     onValueChange(value: string): void {
@@ -122,10 +133,6 @@ export class TuiInputMonthComponent
         }
 
         this.open = open;
-    }
-
-    toggle(): void {
-        this.open = !this.open;
     }
 
     override setDisabledState(): void {

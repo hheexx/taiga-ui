@@ -6,6 +6,7 @@ import {
     Inject,
     Input,
     QueryList,
+    Self,
 } from '@angular/core';
 import {
     EMPTY_QUERY,
@@ -15,14 +16,14 @@ import {
     tuiItemsQueryListObservable,
 } from '@taiga-ui/cdk';
 import {identity, merge} from 'rxjs';
-import {filter, map, mapTo, pairwise, switchMap, takeUntil} from 'rxjs/operators';
+import {filter, map, pairwise, switchMap, takeUntil} from 'rxjs/operators';
 
 import {TuiAccordionItemComponent} from './accordion-item/accordion-item.component';
 
 @Component({
-    selector: `tui-accordion`,
-    styleUrls: [`./accordion.style.less`],
-    templateUrl: `accordion.template.html`,
+    selector: 'tui-accordion',
+    styleUrls: ['./accordion.style.less'],
+    templateUrl: 'accordion.template.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TuiDestroyService],
 })
@@ -39,6 +40,7 @@ export class TuiAccordionComponent implements AfterContentInit {
     readonly accordionItems: QueryList<TuiAccordionItemComponent> = EMPTY_QUERY;
 
     constructor(
+        @Self()
         @Inject(TuiDestroyService)
         private readonly destroy$: TuiDestroyService,
     ) {}
@@ -58,7 +60,10 @@ export class TuiAccordionComponent implements AfterContentInit {
                 switchMap(rows =>
                     merge(
                         ...rows.map(row =>
-                            row.openChange.pipe(filter(identity), mapTo(row)),
+                            row.openChange.pipe(
+                                filter(identity),
+                                map(() => row),
+                            ),
                         ),
                     ),
                 ),

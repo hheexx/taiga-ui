@@ -12,14 +12,14 @@ jobs:
     name: Firebase
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Node.js and Cache
         uses: ./.github/actions/nodejs
 
-      - run: npx nx build
+      - run: npx nx build --base-href='/'
 
       - name: Debug output
-        run: ls -la dist/demo/browser
+        run: tree dist/demo/browser -P '*.html'
 
       - name: Deploy preview
         uses: FirebaseExtended/action-hosting-deploy@v0

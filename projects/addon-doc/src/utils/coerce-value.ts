@@ -1,13 +1,17 @@
 export function tuiCoerceValue<T>(
     value?: T,
-): T | number | string | boolean | null | object {
+): Record<string, any> | T | boolean | number | string | null {
     const prepared = String(value).trim();
 
     if (isEmptyParamValue(prepared)) {
         return null;
-    } else if (isBooleanParamValue(prepared)) {
+    }
+
+    if (isBooleanParamValue(prepared)) {
         return String(prepared) === `true`;
-    } else if (isNumberParamValue(prepared)) {
+    }
+
+    if (isNumberParamValue(prepared)) {
         return Number(prepared);
     }
 

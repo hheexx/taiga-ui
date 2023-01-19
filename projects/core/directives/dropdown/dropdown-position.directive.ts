@@ -5,20 +5,16 @@ import {
     TuiPositionAccessor,
     TuiRectAccessor,
 } from '@taiga-ui/core/abstract';
-import {TuiPoint} from '@taiga-ui/core/types';
+import {TuiPoint, TuiVerticalDirection} from '@taiga-ui/core/types';
 
-import {
-    TUI_DROPDOWN_OFFSET,
-    TUI_DROPDOWN_OPTIONS,
-    TuiDropdownOptions,
-} from './dropdown-options.directive';
+import {TUI_DROPDOWN_OPTIONS, TuiDropdownOptions} from './dropdown-options.directive';
 
 @Directive({
-    selector: `[tuiDropdown]:not([tuiDropdownCustomPosition]):not([tuiDropdownSided])`,
+    selector: '[tuiDropdown]:not([tuiDropdownCustomPosition]):not([tuiDropdownSided])',
     providers: [tuiAsPositionAccessor(TuiDropdownPositionDirective)],
 })
 export class TuiDropdownPositionDirective implements TuiPositionAccessor {
-    private previous = this.options.direction || `bottom`;
+    private previous?: TuiVerticalDirection;
 
     constructor(
         @Inject(TUI_DROPDOWN_OPTIONS) private readonly options: TuiDropdownOptions,
@@ -29,29 +25,26 @@ export class TuiDropdownPositionDirective implements TuiPositionAccessor {
     getPosition({width, height}: ClientRect): TuiPoint {
         const hostRect = this.accessor.getClientRect();
         const {innerHeight, innerWidth} = this.windowRef;
-        const {minHeight, align, direction} = this.options;
-        const right = Math.max(hostRect.right - width, TUI_DROPDOWN_OFFSET);
+        const {minHeight, align, direction, offset} = this.options;
+        const previous = this.previous || direction || 'bottom';
+        const right = Math.max(hostRect.right - width, offset);
         const available = {
-            top: hostRect.top - 2 * TUI_DROPDOWN_OFFSET,
-            bottom: innerHeight - hostRect.bottom - 2 * TUI_DROPDOWN_OFFSET,
+            top: hostRect.top - 2 * offset,
+            bottom: innerHeight - hostRect.bottom - 2 * offset,
         } as const;
         const position = {
-            top: hostRect.top - TUI_DROPDOWN_OFFSET - height,
-            bottom: hostRect.bottom + TUI_DROPDOWN_OFFSET,
+            top: hostRect.top - offset - height,
+            bottom: hostRect.bottom + offset,
             right,
-            left:
-                hostRect.left + width < innerWidth - TUI_DROPDOWN_OFFSET
-                    ? hostRect.left
-                    : right,
+            left: hostRect.left + width < innerWidth - offset ? hostRect.left : right,
         } as const;
-        const better = available.top > available.bottom ? `top` : `bottom`;
+        const better = available.top > available.bottom ? 'top' : 'bottom';
 
         if (
-            (available[this.previous] > minHeight && direction) ||
-            available[this.previous] > height ||
-            this.previous === better
+            (available[previous] > minHeight && direction) ||
+            available[previous] > height
         ) {
-            return [position[this.previous], position[align]];
+            return [position[previous], position[align]];
         }
 
         this.previous = better;

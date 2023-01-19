@@ -13,6 +13,7 @@ import {
 import {NgControl} from '@angular/forms';
 import {
     AbstractTuiNullableControl,
+    TUI_IS_MOBILE,
     TuiActiveZoneDirective,
     tuiAsControl,
     tuiAsFocusableItemAccessor,
@@ -41,12 +42,13 @@ import {FIXED_DROPDOWN_CONTROLLER_PROVIDER} from '@taiga-ui/kit/providers';
 import {TUI_ITEMS_HANDLERS, TuiItemsHandlers} from '@taiga-ui/kit/tokens';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
+import {AbstractTuiNativeSelect} from './native-select/native-select';
 import {TUI_SELECT_OPTIONS, TuiSelectOptions} from './select-options';
 
 @Component({
-    selector: `tui-select`,
-    templateUrl: `./select.template.html`,
-    styleUrls: [`./select.style.less`],
+    selector: 'tui-select',
+    templateUrl: './select.template.html',
+    styleUrls: ['./select.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiSelectComponent),
@@ -66,6 +68,9 @@ export class TuiSelectComponent<T>
     @ViewChild(TuiHostedDropdownComponent)
     private readonly hostedDropdown?: TuiHostedDropdownComponent;
 
+    @ContentChild(AbstractTuiNativeSelect, {static: true})
+    private readonly nativeSelect?: AbstractTuiNativeSelect;
+
     @Input()
     @tuiDefaultProp()
     stringify: TuiItemsHandlers<T>['stringify'] = this.itemsHandlers.stringify;
@@ -82,7 +87,7 @@ export class TuiSelectComponent<T>
     @ContentChild(TuiDataListDirective, {read: TemplateRef})
     readonly datalist: PolymorpheusContent<
         TuiContextWithImplicit<TuiActiveZoneDirective>
-    > = ``;
+    > = '';
 
     constructor(
         @Optional()
@@ -98,12 +103,14 @@ export class TuiSelectComponent<T>
         private readonly itemsHandlers: TuiItemsHandlers<T>,
         @Inject(TUI_SELECT_OPTIONS)
         private readonly options: TuiSelectOptions<T>,
+        @Inject(TUI_IS_MOBILE)
+        readonly isMobile: boolean,
     ) {
         super(control, changeDetectorRef);
     }
 
     get arrow(): PolymorpheusContent<
-        TuiContextWithImplicit<TuiSizeS | TuiSizeM | TuiSizeL>
+        TuiContextWithImplicit<TuiSizeL | TuiSizeM | TuiSizeS>
     > {
         return !this.interactive ? this.arrowMode.disabled : this.arrowMode.interactive;
     }
@@ -119,17 +126,23 @@ export class TuiSelectComponent<T>
         );
     }
 
+    get nativeDropdownMode(): boolean {
+        return !!this.nativeSelect && this.isMobile;
+    }
+
     get computedValue(): string {
-        return this.value === null ? `` : this.stringify(this.value) || ` `;
+        return this.value === null ? '' : this.stringify(this.value) || ' ';
     }
 
     get computedContent(): PolymorpheusContent<TuiValueContentContext<T>> {
         return this.valueContent || this.computedValue;
     }
 
-    onValueChange(value: string): void {
+    onValueChange(value: T): void {
         if (!value) {
             this.updateValue(null);
+        } else {
+            this.updateValue(value || null);
         }
     }
 

@@ -1,6 +1,14 @@
-import {TuiSizeXS, TuiSizeXXL} from '@taiga-ui/core/types';
+import {TuiSizeXXL, TuiSizeXXS} from '@taiga-ui/core/types';
 
-const SIZES: ReadonlyArray<TuiSizeXS | TuiSizeXXL> = [`xs`, `s`, `m`, `l`, `xl`, `xxl`];
+const SIZES: Record<TuiSizeXXL | TuiSizeXXS, number> = {
+    xxs: 0,
+    xs: 1,
+    s: 2,
+    m: 3,
+    l: 4,
+    xl: 5,
+    xxl: 6,
+};
 
 /**
  * Compares size constants to determine if first size is bigger than the second
@@ -9,8 +17,8 @@ const SIZES: ReadonlyArray<TuiSizeXS | TuiSizeXXL> = [`xs`, `s`, `m`, `l`, `xl`,
  * @param biggerThanSize size to compare with, 's' by default
  */
 export function tuiSizeBigger(
-    size: TuiSizeXS | TuiSizeXXL,
-    biggerThanSize: TuiSizeXS | TuiSizeXXL = `s`,
+    size: TuiSizeXXL | TuiSizeXXS,
+    biggerThanSize: TuiSizeXXL | TuiSizeXXS = `s`,
 ): boolean {
-    return SIZES.indexOf(size) > SIZES.indexOf(biggerThanSize);
+    return SIZES[size] > SIZES[biggerThanSize];
 }

@@ -8,9 +8,9 @@ const EMPTY_ARRAY: readonly number[] = [];
 const FILLER_ARRAY: readonly number[] = [1];
 
 @Component({
-    selector: `tui-bar-set`,
-    templateUrl: `./bar-set.template.html`,
-    styleUrls: [`./bar-set.style.less`],
+    selector: 'tui-bar-set',
+    templateUrl: './bar-set.template.html',
+    styleUrls: ['./bar-set.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiBarSetComponent {
@@ -20,7 +20,7 @@ export class TuiBarSetComponent {
 
     @Input()
     @tuiDefaultProp()
-    size: TuiSizeS | TuiSizeL | null = `m`;
+    size: TuiSizeL | TuiSizeS | null = 'm';
 
     @Input()
     @tuiDefaultProp()
@@ -34,8 +34,8 @@ export class TuiBarSetComponent {
         return this.collapsed ? this.value : EMPTY_ARRAY;
     }
 
-    get computedSize(): TuiSizeS | TuiSizeL {
-        return this.size || `m`;
+    get computedSize(): TuiSizeL | TuiSizeS {
+        return this.size || 'm';
     }
 
     getHeight(value: number): number {
@@ -43,7 +43,7 @@ export class TuiBarSetComponent {
     }
 
     getColor(index: number): SafeValue {
-        return `var(--tui-chart-${index}`;
+        return `var(--tui-chart-${index})`;
     }
 
     @tuiPure

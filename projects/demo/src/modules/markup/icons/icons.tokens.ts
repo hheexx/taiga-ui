@@ -3,7 +3,7 @@ import * as allIcons from '@taiga-ui/icons';
 
 export type DemoTuiIcon = keyof typeof import('@taiga-ui/icons');
 
-export type DemoTuiIconsList = ReadonlyArray<string | DemoTuiIcon>;
+export type DemoTuiIconsList = ReadonlyArray<DemoTuiIcon | string>;
 
 export type DemoTuiIconsTabs = Record<string, Record<string, DemoTuiIconsList>>;
 
@@ -15,6 +15,9 @@ export const COMMERCE: DemoTuiIcon[] = [
     `tuiIconVisa`,
 ];
 
+// TODO: remove in 4.0
+const DEPRECATED: DemoTuiIcon[] = [`tuiIconSortUp`, `tuiIconSortDown`];
+
 const {LARGE, NORMAL} = ensureIcons();
 
 export const ICONS: DemoTuiIconsTabs = {
@@ -22,6 +25,7 @@ export const ICONS: DemoTuiIconsTabs = {
         [`Normal interface icons / 16px`]: NORMAL,
         [`Large interface icons / 24px`]: LARGE,
         [`Payment systems`]: COMMERCE,
+        [`Deprecated ❌`]: DEPRECATED,
     },
 };
 

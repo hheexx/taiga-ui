@@ -15,7 +15,7 @@ interface TestComponent {
     control?: FormControl;
     value?: unknown;
     labelOutside: boolean;
-    size: 's' | 'm' | 'l';
+    size: 'l' | 'm' | 's';
 }
 
 export function tuiTestPlaceholder(
@@ -33,7 +33,7 @@ export function tuiTestPlaceholder(
             fixture = context.fixture;
             testComponent = context.testComponent;
 
-            fixture.detectChanges();
+            fixture.autoDetectChanges();
         });
 
         describe(`in size S`, () => {

@@ -12,6 +12,7 @@
                 tuiLink
                 tuiMode="onLight"
                 href="https://github.com/tinkoff/taiga-ui"
+                rel="noreferrer"
                 target="_blank"
                 class="app-link"
             >
@@ -23,6 +24,10 @@
                 GitHub
             </a>
         </ng-container>
+        <community-links
+            ngProjectAs="tuiDocNavigation"
+            class="community-links"
+        ></community-links>
         <tui-language-switcher
             tuiTextfieldSize="m"
             ngProjectAs="tuiDocNavigation"
@@ -40,7 +45,5 @@
         <tui-sheets-host ngProjectAs="tuiOverContent"></tui-sheets-host>
         <custom-host ngProjectAs="tuiOverContent"></custom-host>
         <tui-table-bars-host ngProjectAs="tuiOverAlerts"></tui-table-bars-host>
-        <tui-theme-android *ngIf="isAndroid"></tui-theme-android>
-        <tui-theme-ios *ngIf="isIos"></tui-theme-ios>
     </tui-doc-main>
 </ng-template>

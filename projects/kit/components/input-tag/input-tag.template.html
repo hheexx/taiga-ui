@@ -39,16 +39,13 @@
                     </div>
                 </div>
                 <tui-scrollbar
-                    *ngIf="!expandable; else items"
                     class="t-scrollbar"
-                    [hidden]="true"
+                    [hidden]="!expandable"
+                    [style.maxHeight.rem]="computeMaxHeight"
                 >
-                    <ng-container [ngTemplateOutlet]="items"></ng-container>
-                </tui-scrollbar>
-                <ng-template #items>
                     <div
-                        #tagsContainer
                         class="t-tags"
+                        [class.t-tags_expandable]="expandable"
                     >
                         <ng-container *ngIf="labelOutside; else text">
                             <tui-tag
@@ -100,26 +97,30 @@
                                 [tuiFocusable]="computedFocusable"
                                 [ngModel]="search"
                                 (ngModelChange)="onInput($event)"
+                                (paste.prevent)="onPaste($event)"
+                                (drop.prevent)="onDrop($any($event))"
                                 (keydown.arrowLeft)="onFieldKeyDownArrowLeft($event)"
                                 (keydown.backspace)="onFieldKeyDownBackspace($event)"
                                 (keydown.enter.prevent)="onFieldKeyDownEnter()"
                             />
                         </div>
                     </div>
-                </ng-template>
+                </tui-scrollbar>
             </div>
             <div
                 *ngIf="hasRightIcons"
                 class="t-icons t-icons_right"
             >
-                <tui-svg
-                    *ngIf="hasCleaner"
-                    #cleaner
-                    automation-id="tui-input-tag__cleaner"
-                    src="tuiIconCloseLarge"
-                    class="t-cleaner"
-                    (click.stop)="onCleanerClick()"
-                ></tui-svg>
+                <ng-container *ngIf="hasCleaner">
+                    <tui-svg
+                        *polymorpheusOutlet="iconCleaner as src; context: {$implicit: size}"
+                        #cleaner
+                        automation-id="tui-input-tag__cleaner"
+                        class="t-cleaner"
+                        [src]="src"
+                        (click.stop)="onCleanerClick()"
+                    ></tui-svg>
+                </ng-container>
                 <tui-tooltip
                     *ngIf="hintOptions && hintOptions.content && !computedDisabled"
                     automation-id="tui-input-tag__tooltip"

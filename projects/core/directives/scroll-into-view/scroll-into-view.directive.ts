@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Inject, Input} from '@angular/core';
+import {Directive, ElementRef, Inject, Input, Self} from '@angular/core';
 import {TuiDestroyService, tuiRequiredSetter} from '@taiga-ui/cdk';
 import {TUI_SCROLL_INTO_VIEW} from '@taiga-ui/core/constants';
 import {Observable, timer} from 'rxjs';
@@ -8,7 +8,7 @@ import {takeUntil} from 'rxjs/operators';
  * Directive scrolls element into view inside tui-scrollbar
  */
 @Directive({
-    selector: `[tuiScrollIntoView]`,
+    selector: '[tuiScrollIntoView]',
     providers: [TuiDestroyService],
 })
 export class TuiScrollIntoViewDirective {
@@ -35,6 +35,6 @@ export class TuiScrollIntoViewDirective {
 
     constructor(
         @Inject(ElementRef) private readonly elementRef: ElementRef<Element>,
-        @Inject(TuiDestroyService) private readonly destroy$: Observable<void>,
+        @Self() @Inject(TuiDestroyService) private readonly destroy$: Observable<void>,
     ) {}
 }

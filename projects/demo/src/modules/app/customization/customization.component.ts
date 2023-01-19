@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, Self, ViewChild} from '@angular/core';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {changeDetection} from '@demo/emulate/change-detection';
 import {TuiDocDemoComponent} from '@taiga-ui/addon-doc';
@@ -7,26 +7,28 @@ import {TuiBrightness} from '@taiga-ui/core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {
     TUI_DOC_CUSTOMIZATION_PROVIDERS,
     TUI_DOC_CUSTOMIZATION_VARS,
 } from './customization.providers';
 
 @Component({
-    selector: `tui-customization`,
-    templateUrl: `./customization.template.html`,
-    styleUrls: [`./customization.style.less`],
+    selector: 'tui-customization',
+    templateUrl: './customization.template.html',
+    styleUrls: ['./customization.style.less'],
     changeDetection,
     providers: TUI_DOC_CUSTOMIZATION_PROVIDERS,
 })
 export class TuiCustomizationComponent implements AfterViewInit {
-    @ViewChild(`demo`)
+    @ViewChild('demo')
     private readonly demo?: TuiDocDemoComponent;
 
     readonly change$ = new Subject<void>();
 
     constructor(
-        @Inject(TuiDestroyService) private readonly destroy$: TuiDestroyService,
+        @Self() @Inject(TuiDestroyService) private readonly destroy$: TuiDestroyService,
         @Inject(DomSanitizer) private readonly sanitizer: DomSanitizer,
         @Inject(TUI_DOC_CUSTOMIZATION_VARS) private variables: Record<string, string>,
     ) {}
@@ -66,36 +68,36 @@ export class TuiCustomizationComponent implements AfterViewInit {
     }
 
     isLight(key: string): boolean {
-        return key.includes(`onDark`);
+        return key.includes('onDark');
     }
 
     isDark(key: string): boolean {
-        return key.includes(`onLight`);
+        return key.includes('onLight');
     }
 
-    onModelChange(variable: string, value: string | number): void {
+    onModelChange(variable: string, value: number | string): void {
         this.variables = {
             ...this.variables,
             [variable]: tuiIsString(value) ? value : tuiPx(value),
         };
     }
 
-    getType(key: string): 'number' | 'color' | 'string' {
+    getType(key: string): 'color' | 'number' | 'string' {
         const variable = this.variables[key];
 
-        if (key.includes(`boxshadow`)) {
-            return `string`;
+        if (key.includes('boxshadow')) {
+            return 'string';
         }
 
-        return variable.startsWith(`#`) || variable.startsWith(`rgb`)
-            ? `color`
-            : `number`;
+        return variable.startsWith('#') || variable.startsWith('rgb')
+            ? 'color'
+            : 'number';
     }
 
-    getVariable(key: string): string | number {
+    getVariable(key: string): number | string {
         const variable = this.variables[key];
 
-        return variable.includes(`px`) ? Number.parseInt(variable, 10) : variable;
+        return variable.includes('px') ? Number.parseInt(variable, 10) : variable;
     }
 
     @tuiPure
@@ -112,7 +114,7 @@ export class TuiCustomizationComponent implements AfterViewInit {
     private stringify(variables: Record<string, string>): string {
         return Object.keys(variables).reduce(
             (result, key) => `${key}: ${variables[key]}; ${result}`,
-            ``,
+            '',
         );
     }
 }

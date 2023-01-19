@@ -3,7 +3,7 @@
 export const tuiWaitAllImgInside = (
     prevSubject: Cypress.PrevSubjectMap<void>[Cypress.PrevSubject],
     enabled: boolean = true,
-): Cypress.Chainable<JQuery> | Cypress.Chainable<JQuery<HTMLBodyElement>> => {
+): Cypress.Chainable<JQuery<HTMLBodyElement>> | Cypress.Chainable<JQuery> => {
     const target =
         prevSubject && Cypress.dom.isJquery(prevSubject)
             ? cy.wrap(prevSubject, {log: false})
@@ -20,7 +20,7 @@ export const tuiWaitAllImgInside = (
                 autoEnd: false,
                 consoleProps: () => ({
                     prevSubject,
-                    img: img,
+                    img,
                 }),
             });
 
@@ -56,7 +56,7 @@ export const tuiWaitAllImgInside = (
                                 ).to.be.greaterThan(0);
                             } else {
                                 cy.request({
-                                    url: url,
+                                    url,
                                     failOnStatusCode: false,
                                     log: false,
                                 }).then(resp => {

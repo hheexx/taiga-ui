@@ -12,15 +12,7 @@ import {
 } from '@taiga-ui/cdk';
 import {TUI_ARROW} from '@taiga-ui/kit';
 import {BehaviorSubject, combineLatest, Observable, timer} from 'rxjs';
-import {
-    debounceTime,
-    filter,
-    map,
-    mapTo,
-    share,
-    startWith,
-    switchMap,
-} from 'rxjs/operators';
+import {debounceTime, filter, map, share, startWith, switchMap} from 'rxjs/operators';
 
 interface User {
     readonly name: string;
@@ -29,32 +21,32 @@ interface User {
 
 const TODAY = TuiDay.currentLocal();
 const FIRST = [
-    `John`,
-    `Jane`,
-    `Jack`,
-    `Jill`,
-    `James`,
-    `Joan`,
-    `Jim`,
-    `Julia`,
-    `Joe`,
-    `Julia`,
+    'John',
+    'Jane',
+    'Jack',
+    'Jill',
+    'James',
+    'Joan',
+    'Jim',
+    'Julia',
+    'Joe',
+    'Julia',
 ];
 
 const LAST = [
-    `Smith`,
-    `West`,
-    `Brown`,
-    `Jones`,
-    `Davis`,
-    `Miller`,
-    `Johnson`,
-    `Jackson`,
-    `Williams`,
-    `Wilson`,
+    'Smith',
+    'West',
+    'Brown',
+    'Jones',
+    'Davis',
+    'Miller',
+    'Johnson',
+    'Jackson',
+    'Williams',
+    'Wilson',
 ];
 
-type Key = 'name' | 'dob' | 'age';
+type Key = 'age' | 'dob' | 'name';
 
 const DATA: readonly User[] = Array.from({length: 300}, () => ({
     name: `${LAST[Math.floor(Math.random() * 10)]}, ${
@@ -63,15 +55,15 @@ const DATA: readonly User[] = Array.from({length: 300}, () => ({
     dob: TODAY.append({day: -Math.floor(Math.random() * 4000) - 7500}),
 }));
 const KEYS: Record<string, Key> = {
-    Name: `name`,
-    Age: `age`,
-    'Date of Birth': `dob`,
+    Name: 'name',
+    Age: 'age',
+    'Date of Birth': 'dob',
 };
 
 @Component({
-    selector: `tui-table-example-4`,
-    templateUrl: `./index.html`,
-    styleUrls: [`./index.less`],
+    selector: 'tui-table-example-4',
+    templateUrl: './index.html',
+    styleUrls: ['./index.less'],
     changeDetection,
     encapsulation,
 })
@@ -80,7 +72,7 @@ export class TuiTableExample4 {
     private readonly page$ = new BehaviorSubject(0);
 
     readonly direction$ = new BehaviorSubject<-1 | 1>(-1);
-    readonly sorter$ = new BehaviorSubject<Key>(`name`);
+    readonly sorter$ = new BehaviorSubject<Key>('name');
 
     readonly minAge = new FormControl(21);
 
@@ -97,13 +89,13 @@ export class TuiTableExample4 {
         share(),
     );
 
-    initial: readonly string[] = [`Name`, `Date of Birth`, `Age`];
+    initial: readonly string[] = ['Name', 'Date of Birth', 'Age'];
 
     enabled = this.initial;
 
-    columns = [`name`, `dob`, `age`];
+    columns = ['name', 'dob', 'age'];
 
-    search = ``;
+    search = '';
 
     readonly arrow = TUI_ARROW;
 
@@ -149,13 +141,13 @@ export class TuiTableExample4 {
     }
 
     private getData(
-        key: 'name' | 'dob' | 'age',
+        key: 'age' | 'dob' | 'name',
         direction: -1 | 1,
         page: number,
         size: number,
         minAge: number,
     ): Observable<ReadonlyArray<User | null>> {
-        console.info(`Making a request`);
+        console.info('Making a request');
 
         const start = page * size;
         const end = start + size;
@@ -165,13 +157,13 @@ export class TuiTableExample4 {
             .map((user, index) => (index >= start && index < end ? user : null));
 
         // Imitating server response
-        return timer(3000).pipe(mapTo(result));
+        return timer(3000).pipe(map(() => result));
     }
 }
 
-function sortBy(key: 'name' | 'dob' | 'age', direction: -1 | 1): TuiComparator<User> {
+function sortBy(key: 'age' | 'dob' | 'name', direction: -1 | 1): TuiComparator<User> {
     return (a, b) =>
-        key === `age`
+        key === 'age'
             ? direction * tuiDefaultSort(getAge(a), getAge(b))
             : direction * tuiDefaultSort(a[key], b[key]);
 }

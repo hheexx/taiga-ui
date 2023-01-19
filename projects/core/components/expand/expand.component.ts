@@ -12,8 +12,10 @@ import {
     TemplateRef,
     ViewChild,
 } from '@angular/core';
-import {tuiDefaultProp, tuiIsCurrentTarget, tuiRequiredSetter} from '@taiga-ui/cdk';
+import {tuiDefaultProp, tuiRequiredSetter} from '@taiga-ui/cdk';
 import {TUI_EXPAND_LOADED} from '@taiga-ui/core/constants';
+
+import {TuiExpandContentDirective} from './expand-content.directive';
 
 const enum State {
     Idle,
@@ -25,13 +27,13 @@ const enum State {
 const LOADER_HEIGHT = 48;
 
 @Component({
-    selector: `tui-expand`,
-    templateUrl: `./expand.template.html`,
-    styleUrls: [`./expand.style.less`],
+    selector: 'tui-expand',
+    templateUrl: './expand.template.html',
+    styleUrls: ['./expand.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiExpandComponent {
-    @ViewChild(`wrapper`)
+    @ViewChild('wrapper')
     private readonly contentWrapper?: ElementRef<HTMLDivElement>;
 
     private state = State.Idle;
@@ -40,7 +42,7 @@ export class TuiExpandComponent {
     @tuiDefaultProp()
     async = false;
 
-    @Input(`expanded`)
+    @Input('expanded')
     @tuiRequiredSetter()
     set expandedSetter(expanded: boolean | null) {
         if (this.expanded === null) {
@@ -60,28 +62,28 @@ export class TuiExpandComponent {
         this.retrigger(this.async && expanded ? State.Loading : State.Animated);
     }
 
-    @ContentChild(TemplateRef)
+    @ContentChild(TuiExpandContentDirective, {read: TemplateRef})
     content: TemplateRef<NgIfContext<boolean>> | null = null;
 
-    @HostBinding(`class._expanded`)
-    @HostBinding(`attr.aria-expanded`)
+    @HostBinding('class._expanded')
+    @HostBinding('attr.aria-expanded')
     expanded: boolean | null = null;
 
     constructor(
         @Inject(ChangeDetectorRef) private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
-    @HostBinding(`class._overflow`)
+    @HostBinding('class._overflow')
     get overflow(): boolean {
         return this.state !== State.Idle;
     }
 
-    @HostBinding(`class._loading`)
+    @HostBinding('class._loading')
     get loading(): boolean {
         return !!this.expanded && this.async && this.state === State.Loading;
     }
 
-    @HostBinding(`style.height.px`)
+    @HostBinding('style.height.px')
     get height(): number | null {
         const {expanded, state, contentWrapper} = this;
 
@@ -111,18 +113,14 @@ export class TuiExpandComponent {
         return this.expanded || this.state !== State.Idle;
     }
 
-    @HostListener(`transitionend`, [`$event`])
-    onTransitionEnd(event: TransitionEvent): void {
-        if (
-            tuiIsCurrentTarget(event) &&
-            event.propertyName === `opacity` &&
-            this.state === State.Animated
-        ) {
+    @HostListener('transitionend.self', ['$event'])
+    onTransitionEnd({propertyName}: TransitionEvent): void {
+        if (propertyName === 'opacity' && this.state === State.Animated) {
             this.state = State.Idle;
         }
     }
 
-    @HostListener(TUI_EXPAND_LOADED, [`$event`])
+    @HostListener(TUI_EXPAND_LOADED, ['$event'])
     onExpandLoaded(event: Event): void {
         event.stopPropagation();
 

@@ -17,9 +17,9 @@ import {TuiHeadDirective} from '../directives/head.directive';
 import {TuiTableDirective} from '../directives/table.directive';
 
 @Component({
-    selector: `th[tuiTh]`,
-    templateUrl: `./th.template.html`,
-    styleUrls: [`./th.style.less`],
+    selector: 'th[tuiTh]',
+    templateUrl: './th.template.html',
+    styleUrls: ['./th.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {
@@ -28,7 +28,7 @@ import {TuiTableDirective} from '../directives/table.directive';
         },
     ],
 })
-export class TuiThComponent<T extends Record<keyof T, any>> {
+export class TuiThComponent<T extends Partial<Record<keyof T, any>>> {
     @Input()
     @tuiDefaultProp()
     sorter: TuiComparator<T> | null = this.head
@@ -40,11 +40,11 @@ export class TuiThComponent<T extends Record<keyof T, any>> {
     resizable = false;
 
     @Input()
-    @HostBinding(`class._sticky`)
+    @HostBinding('class._sticky')
     @tuiDefaultProp()
     sticky = false;
 
-    @HostBinding(`style.width.px`)
+    @HostBinding('style.width.px')
     width: number | null = null;
 
     constructor(
@@ -69,7 +69,13 @@ export class TuiThComponent<T extends Record<keyof T, any>> {
     }
 
     get icon(): string {
-        return this.isCurrent ? `tuiIconSortDown` : `tuiIconSortOff`;
+        if (this.isCurrent) {
+            return this.table?.direction === 1
+                ? 'tuiIconSortDescending'
+                : 'tuiIconSortAscending';
+        }
+
+        return 'tuiIconSortOff';
     }
 
     onResized(width: number): void {

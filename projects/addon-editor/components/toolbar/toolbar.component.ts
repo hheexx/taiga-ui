@@ -17,7 +17,10 @@ import {AbstractTuiEditor} from '@taiga-ui/addon-editor/abstract';
 import {defaultEditorTools} from '@taiga-ui/addon-editor/constants';
 import {TuiTiptapEditorService} from '@taiga-ui/addon-editor/directives';
 import {TuiEditorTool} from '@taiga-ui/addon-editor/enums';
+import {TuiEditorAttachedFile} from '@taiga-ui/addon-editor/interfaces';
 import {
+    TUI_ATTACH_FILES_LOADER,
+    TUI_ATTACH_FILES_OPTIONS,
     TUI_EDITOR_OPTIONS,
     TUI_EDITOR_TOOLBAR_TEXTS,
     TUI_IMAGE_LOADER,
@@ -25,8 +28,10 @@ import {
 } from '@taiga-ui/addon-editor/tokens';
 import {
     EMPTY_QUERY,
+    tuiAssert,
     tuiDefaultProp,
     TuiHandler,
+    TuiInjectionTokenType,
     tuiIsNativeFocusedIn,
 } from '@taiga-ui/cdk';
 import {TuiHostedDropdownComponent} from '@taiga-ui/core';
@@ -37,16 +42,16 @@ import {take} from 'rxjs/operators';
 import {TuiToolbarNavigationManagerDirective} from './toolbar-navigation-manager.directive';
 
 @Component({
-    selector: `tui-toolbar`,
-    templateUrl: `./toolbar.template.html`,
-    styleUrls: [`./toolbar.style.less`],
+    selector: 'tui-toolbar',
+    templateUrl: './toolbar.template.html',
+    styleUrls: ['./toolbar.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
-        role: `toolbar`,
+        role: 'toolbar',
     },
 })
 export class TuiToolbarComponent {
-    @ViewChildren(`dropdown`, {read: ElementRef})
+    @ViewChildren('dropdown', {read: ElementRef})
     private readonly dropdowns: QueryList<ElementRef<HTMLElement>> = EMPTY_QUERY;
 
     @ViewChild(TuiToolbarNavigationManagerDirective)
@@ -57,7 +62,7 @@ export class TuiToolbarComponent {
     colors: ReadonlyMap<string, string> = this.defaultOptions.colors;
 
     @Input()
-    @HostBinding(`class._disabled`)
+    @HostBinding('class._disabled')
     @tuiDefaultProp()
     disabled = false;
 
@@ -68,14 +73,14 @@ export class TuiToolbarComponent {
     readonly texClicked = new EventEmitter<void>();
 
     @Output()
-    readonly attachClicked = new EventEmitter<void>();
+    readonly fileAttached = new EventEmitter<TuiEditorAttachedFile[]>();
 
     readonly TuiEditorTool: typeof TuiEditorTool = TuiEditorTool;
 
     toolsSet: Set<TuiEditorTool> = new Set(defaultEditorTools);
 
     @Input()
-    @tuiDefaultProp(toolsAssertion, `Attach and TeX are not yet implemented in Editor`)
+    @tuiDefaultProp(toolsAssertion, 'Attach and TeX are not yet implemented in Editor')
     set tools(value: readonly TuiEditorTool[]) {
         this.toolsSet = new Set(value);
     }
@@ -87,6 +92,13 @@ export class TuiToolbarComponent {
         @Inject(TuiTiptapEditorService) readonly editor: AbstractTuiEditor,
         @Inject(TUI_IMAGE_LOADER)
         private readonly imageLoader: TuiHandler<File, Observable<string>>,
+        @Inject(TUI_ATTACH_FILES_OPTIONS)
+        readonly attachOptions: TuiInjectionTokenType<typeof TUI_ATTACH_FILES_OPTIONS>,
+        @Optional()
+        @Inject(TUI_ATTACH_FILES_LOADER)
+        private readonly filesLoader: TuiInjectionTokenType<
+            typeof TUI_ATTACH_FILES_LOADER
+        > | null,
         @Inject(TUI_EDITOR_TOOLBAR_TEXTS)
         readonly texts$: Observable<TuiLanguageEditor['toolbarTools']>,
         @Inject(TUI_EDITOR_OPTIONS)
@@ -107,19 +119,27 @@ export class TuiToolbarComponent {
     }
 
     get unorderedList(): boolean {
-        return this.editor.isActive(`bulletList`);
+        return this.editor.isActive('bulletList');
     }
 
     get orderedList(): boolean {
-        return this.editor.isActive(`orderedList`);
+        return this.editor.isActive('orderedList');
     }
 
     get blockquote(): boolean {
-        return this.editor.isActive(`blockquote`);
+        return this.editor.isActive('blockquote');
     }
 
     get a(): boolean {
-        return this.editor.isActive(`link`);
+        return this.editor.isActive('link');
+    }
+
+    get jumpAnchor(): boolean {
+        return this.editor.isActive('jumpAnchor');
+    }
+
+    get canOpenAnchor(): boolean {
+        return !this.a && !this.jumpAnchor;
     }
 
     get undoDisabled(): boolean {
@@ -131,11 +151,11 @@ export class TuiToolbarComponent {
     }
 
     get subscript(): boolean {
-        return this.editor.isActive(`subscript`);
+        return this.editor.isActive('subscript');
     }
 
     get superscript(): boolean {
-        return this.editor.isActive(`superscript`);
+        return this.editor.isActive('superscript');
     }
 
     get formatEnabled(): boolean {
@@ -154,6 +174,7 @@ export class TuiToolbarComponent {
             this.enabled(TuiEditorTool.List) ||
             this.enabled(TuiEditorTool.Quote) ||
             this.enabled(TuiEditorTool.Link) ||
+            this.enabled(TuiEditorTool.Anchor) ||
             this.enabled(TuiEditorTool.Attach)
         );
     }
@@ -167,9 +188,9 @@ export class TuiToolbarComponent {
         );
     }
 
-    @HostListener(`mousedown`, [`$event`, `$event.target`])
+    @HostListener('mousedown', ['$event', '$event.target'])
     onMouseDown(event: MouseEvent, target: HTMLElement): void {
-        if (target.closest(`button`)) {
+        if (target.closest('button')) {
             return;
         }
 
@@ -188,7 +209,7 @@ export class TuiToolbarComponent {
     onImage(input: HTMLInputElement): void {
         const file = input.files?.[0];
 
-        input.value = ``;
+        input.value = '';
 
         if (!file) {
             return;
@@ -201,8 +222,20 @@ export class TuiToolbarComponent {
             });
     }
 
-    onAttach(): void {
-        this.attachClicked.emit();
+    onAttach(input: HTMLInputElement): void {
+        const files = Array.from(input.files || []);
+
+        input.value = '';
+
+        if (!files) {
+            return;
+        }
+
+        tuiAssert.assert(!!this.filesLoader, 'Please provide TUI_ATTACH_FILES_LOADER');
+
+        this.filesLoader?.(files)
+            .pipe(take(1))
+            .subscribe(attachedFiles => this.fileAttached.emit(attachedFiles));
     }
 
     onTeX(): void {
@@ -214,8 +247,20 @@ export class TuiToolbarComponent {
 
         if (url) {
             this.editor.toggleLink(url);
+        }
+    }
+
+    setAnchor(hosted: TuiHostedDropdownComponent, anchor?: string): void {
+        hosted.open = false;
+
+        if (anchor) {
+            this.editor.setAnchor(anchor);
             this.editor.selectClosest();
         }
+    }
+
+    removeAnchor(): void {
+        this.editor.removeAnchor();
     }
 
     enabled(tool: TuiEditorTool): boolean {

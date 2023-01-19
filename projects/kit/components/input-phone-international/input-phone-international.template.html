@@ -9,6 +9,8 @@
     <div tuiGroup>
         <tui-primitive-textfield
             tuiHintContent=""
+            tuiTextfieldPrefix=""
+            tuiTextfieldPostfix=""
             class="t-country-select tui-group__auto-width-item"
             [tuiTextfieldCustomContent]="countryValueContent"
             [tuiTextfieldLabelOutside]="true"
@@ -35,7 +37,7 @@
             <ng-content></ng-content>
             <input
                 tuiTextfield
-                autocomplete="off"
+                autocomplete="new-password"
             />
         </tui-input-phone>
     </div>
@@ -56,7 +58,7 @@
                     {{ countriesNames[item] }}
                 </span>
                 <span class="t-country-item-code">
-                    {{ item | tuiMapper: isoToCountryCodeMapper }}
+                    {{ item | tuiMapper : isoToCountryCodeMapper }}
                 </span>
             </button>
         </tui-data-list>
@@ -64,6 +66,7 @@
 
     <ng-template #countryValueContent>
         <img
+            alt="flag"
             class="t-flag"
             [alt]="countriesNames[countryIsoCode]"
             [src]="countryFlagPath"

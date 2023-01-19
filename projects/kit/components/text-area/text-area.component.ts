@@ -18,6 +18,7 @@ import {
     TUI_IS_IOS,
     tuiAsControl,
     tuiAsFocusableItemAccessor,
+    TuiContextWithImplicit,
     tuiDefaultProp,
     TuiFocusableElementAccessor,
     tuiIsNativeFocused,
@@ -36,6 +37,7 @@ import {
     TuiTextfieldComponent,
     TuiTextfieldController,
 } from '@taiga-ui/core';
+import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import {Observable} from 'rxjs';
 
 export const DEFAULT_ROWS = 20;
@@ -43,9 +45,9 @@ export const LINE_HEIGHT_M = 20;
 export const LINE_HEIGHT_L = 24;
 
 @Component({
-    selector: `tui-text-area`,
-    templateUrl: `./text-area.template.html`,
-    styleUrls: [`./text-area.style.less`],
+    selector: 'tui-text-area',
+    templateUrl: './text-area.template.html',
+    styleUrls: ['./text-area.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiTextAreaComponent),
@@ -54,15 +56,15 @@ export const LINE_HEIGHT_L = 24;
         MODE_PROVIDER,
     ],
     host: {
-        '($.data-mode.attr)': `mode$`,
-        '[class._ios]': `isIOS`,
+        '($.data-mode.attr)': 'mode$',
+        '[class._ios]': 'isIOS',
     },
 })
 export class TuiTextAreaComponent
     extends AbstractTuiControl<string>
     implements TuiFocusableElementAccessor
 {
-    @ViewChild(`focusableElement`)
+    @ViewChild('focusableElement')
     private readonly focusableElement?: ElementRef<HTMLTextAreaElement>;
 
     @ContentChild(TuiTextfieldComponent, {read: ElementRef})
@@ -77,7 +79,7 @@ export class TuiTextAreaComponent
     maxLength: number | null = null;
 
     @Input()
-    @HostBinding(`class._expandable`)
+    @HostBinding('class._expandable')
     @tuiDefaultProp()
     expandable = false;
 
@@ -99,7 +101,7 @@ export class TuiTextAreaComponent
         super(control, changeDetectorRef);
     }
 
-    @HostBinding(`class._label-outside`)
+    @HostBinding('class._label-outside')
     get labelOutside(): boolean {
         return this.controller.labelOutside;
     }
@@ -118,12 +120,12 @@ export class TuiTextAreaComponent
         return tuiIsNativeFocused(this.nativeFocusableElement);
     }
 
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     get size(): TuiSizeL | TuiSizeS {
         return this.controller.size;
     }
 
-    @HostBinding(`style.--border-end.rem`)
+    @HostBinding('style.--border-end.rem')
     get border(): number {
         return tuiGetBorder(false, this.hasCleaner, this.hasTooltip);
     }
@@ -132,23 +134,27 @@ export class TuiTextAreaComponent
         return this.controller.cleaner && this.hasValue && this.interactive;
     }
 
-    @HostBinding(`class._has-tooltip`)
+    @HostBinding('class._has-tooltip')
     get hasTooltip(): boolean {
         return !!this.hintOptions?.content && !this.computedDisabled;
     }
 
-    @HostBinding(`class._has-value`)
+    @HostBinding('class._has-value')
     get hasValue(): boolean {
-        return this.value !== ``;
+        return this.value !== '';
     }
 
-    @HostBinding(`class._has-counter`)
+    @HostBinding('class._has-counter')
     get hasCounter(): boolean {
         return !!this.maxLength && this.interactive;
     }
 
     get hasPlaceholder(): boolean {
-        return !this.controller.labelOutside || (!this.hasValue && !this.hasExampleText);
+        return this.placeholderRaisable || (!this.hasValue && !this.hasExampleText);
+    }
+
+    get iconCleaner(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeL | TuiSizeS>> {
+        return this.controller.options.iconCleaner;
     }
 
     get hasExampleText(): boolean {
@@ -166,7 +172,7 @@ export class TuiTextAreaComponent
 
     get placeholderRaised(): boolean {
         return (
-            !this.controller.labelOutside &&
+            this.placeholderRaisable &&
             ((this.computedFocused && !this.readOnly) || this.hasValue)
         );
     }
@@ -179,8 +185,8 @@ export class TuiTextAreaComponent
         return this.value.slice(this.maxLength || Infinity);
     }
 
-    @HostListener(`focusin`, [`true`])
-    @HostListener(`focusout`, [`false`])
+    @HostListener('focusin', ['true'])
+    @HostListener('focusout', ['false'])
     onFocused(focused: boolean): void {
         this.updateFocused(focused);
     }
@@ -202,10 +208,14 @@ export class TuiTextAreaComponent
     }
 
     protected getFallbackValue(): string {
-        return ``;
+        return '';
     }
 
     private get lineHeight(): number {
-        return this.controller.size === `m` ? LINE_HEIGHT_M : LINE_HEIGHT_L;
+        return this.controller.size === 'm' ? LINE_HEIGHT_M : LINE_HEIGHT_L;
+    }
+
+    private get placeholderRaisable(): boolean {
+        return this.size !== 's' && !this.controller.labelOutside;
     }
 }

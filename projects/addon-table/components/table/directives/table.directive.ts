@@ -14,28 +14,30 @@ import {TUI_MODE, TuiBrightness, TuiSizeL, TuiSizeS} from '@taiga-ui/core';
 import {Observable} from 'rxjs';
 
 import {TUI_STUCK} from '../providers/stuck.provider';
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TUI_TABLE_PROVIDERS} from '../providers/table.providers';
 
 @Directive({
-    selector: `table[tuiTable]`,
+    selector: 'table[tuiTable]',
     providers: TUI_TABLE_PROVIDERS,
     host: {
-        '($.data-mode.attr)': `mode$`,
-        '($.class._stuck)': `stuck$`,
-        style: `border-collapse: separate`,
+        '($.data-mode.attr)': 'mode$',
+        '($.class._stuck)': 'stuck$',
+        style: 'border-collapse: separate',
     },
 })
 export class TuiTableDirective<
-    T extends Record<keyof T, any>,
+    T extends Partial<Record<keyof T, any>>,
 > extends AbstractTuiController {
     @Input()
     @tuiDefaultProp()
-    columns: ReadonlyArray<keyof T | string> = [];
+    columns: ReadonlyArray<string | keyof T> = [];
 
     @Input()
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     @tuiDefaultProp()
-    size: TuiSizeS | TuiSizeL = `m`;
+    size: TuiSizeL | TuiSizeS = 'm';
 
     @Input()
     @tuiDefaultProp()
@@ -61,21 +63,28 @@ export class TuiTableDirective<
     @tuiDefaultProp()
     sorter: TuiComparator<T> = () => 0;
 
-    updateSorter(sorter: TuiComparator<T> | null): void {
+    updateSorterAndDirection(sorter: TuiComparator<T> | null): void {
         if (this.sorter === sorter) {
-            this.direction = this.direction === 1 ? -1 : 1;
-            this.directionChange.emit(this.direction);
+            this.updateDirection(this.direction === 1 ? -1 : 1);
         } else {
-            this.sorter = sorter || (() => 0);
-            this.sorterChange.emit(this.sorter);
-            this.direction = 1;
-            this.directionChange.emit(1);
+            this.updateSorter(sorter);
+            this.updateDirection(1);
         }
-
-        this.change$.next();
     }
 
     ngAfterViewInit(): void {
         this.changeDetectorRef.detectChanges();
+    }
+
+    updateSorter(sorter: TuiComparator<T> | null): void {
+        this.sorter = sorter || (() => 0);
+        this.sorterChange.emit(this.sorter);
+        this.change$.next();
+    }
+
+    private updateDirection(direction: -1 | 1): void {
+        this.direction = direction;
+        this.directionChange.emit(this.direction);
+        this.change$.next();
     }
 }

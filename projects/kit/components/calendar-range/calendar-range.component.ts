@@ -8,6 +8,7 @@ import {
     Input,
     Optional,
     Output,
+    Self,
 } from '@angular/core';
 import {
     ALWAYS_FALSE_HANDLER,
@@ -38,9 +39,9 @@ import {Observable} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({
-    selector: `tui-calendar-range`,
-    templateUrl: `./calendar-range.template.html`,
-    styleUrls: [`./calendar-range.style.less`],
+    selector: 'tui-calendar-range',
+    templateUrl: './calendar-range.template.html',
+    styleUrls: ['./calendar-range.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TuiDestroyService],
 })
@@ -93,7 +94,7 @@ export class TuiCalendarRangeComponent implements TuiWithOptionalMinMax<TuiDay> 
         @Inject(TUI_CALENDAR_DATE_STREAM)
         valueChanges: Observable<TuiDayRange | null> | null,
         @Inject(ChangeDetectorRef) changeDetectorRef: ChangeDetectorRef,
-        @Inject(TuiDestroyService) destroy$: TuiDestroyService,
+        @Self() @Inject(TuiDestroyService) destroy$: TuiDestroyService,
         @Inject(TUI_OTHER_DATE_TEXT) readonly otherDateText$: Observable<string>,
     ) {
         if (!valueChanges) {
@@ -107,9 +108,9 @@ export class TuiCalendarRangeComponent implements TuiWithOptionalMinMax<TuiDay> 
             });
     }
 
-    @HostListener(`document:keydown.capture`, [`$event`])
+    @HostListener('document:keydown.capture', ['$event'])
     onEsc(event: KeyboardEvent): void {
-        if (event.key !== `Escape` || !this.value?.isSingleDay) {
+        if (event.key !== 'Escape' || !this.value?.isSingleDay) {
             return;
         }
 
@@ -149,7 +150,7 @@ export class TuiCalendarRangeComponent implements TuiWithOptionalMinMax<TuiDay> 
         return this.value ? this.value.to : this.defaultViewedMonth;
     }
 
-    isItemActive(item: string | TuiDayRangePeriod): boolean {
+    isItemActive(item: TuiDayRangePeriod | string): boolean {
         const {activePeriod} = this;
 
         return (tuiIsString(item) && activePeriod === null) || activePeriod === item;
@@ -173,8 +174,8 @@ export class TuiCalendarRangeComponent implements TuiWithOptionalMinMax<TuiDay> 
         this.updateValue(TuiDayRange.sort(value.from, day));
     }
 
-    onItemSelect(item: string | TuiDayRangePeriod): void {
-        if (typeof item !== `string`) {
+    onItemSelect(item: TuiDayRangePeriod | string): void {
+        if (typeof item !== 'string') {
             this.updateValue(item.range.dayLimit(this.min, this.max));
 
             return;

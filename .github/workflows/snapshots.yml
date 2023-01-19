@@ -16,7 +16,7 @@ jobs:
     name: next
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Node.js and Cache
         uses: ./.github/actions/nodejs
 
@@ -35,12 +35,12 @@ jobs:
     name: production
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Node.js and Cache
         uses: ./.github/actions/nodejs
         id: nodejs-workspace
 
-      - run: npx nx build --skip-nx-cache
+      - run: npx nx build --skip-nx-cache --configuration production
       - run: tree ${{ env.DIST }} -P '*.html'
       - name: Publish snapshots
         uses: s0/git-publish-subdir-action@v2.5.1

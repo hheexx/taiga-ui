@@ -6,6 +6,7 @@ import {
     Inject,
     OnInit,
     PLATFORM_ID,
+    Self,
 } from '@angular/core';
 import {SafeHtml} from '@angular/platform-browser';
 import {TuiDestroyService} from '@taiga-ui/cdk';
@@ -13,9 +14,9 @@ import {TuiSvgService} from '@taiga-ui/core/services';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({
-    selector: `tui-svg-defs-host`,
-    templateUrl: `./svg-defs-host.template.html`,
-    styleUrls: [`./svg-defs-host.style.less`],
+    selector: 'tui-svg-defs-host',
+    templateUrl: './svg-defs-host.template.html',
+    styleUrls: ['./svg-defs-host.style.less'],
     providers: [TuiDestroyService],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -26,6 +27,7 @@ export class TuiSvgDefsHostComponent implements OnInit {
     constructor(
         @Inject(TuiSvgService) private readonly svgService: TuiSvgService,
         @Inject(ChangeDetectorRef) private readonly changeDetectorRef: ChangeDetectorRef,
+        @Self()
         @Inject(TuiDestroyService)
         private readonly destroy$: TuiDestroyService,
         @Inject(PLATFORM_ID) platformId: Record<string, unknown>,

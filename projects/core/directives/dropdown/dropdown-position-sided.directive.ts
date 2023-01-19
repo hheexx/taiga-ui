@@ -1,4 +1,4 @@
-import {Directive, Inject} from '@angular/core';
+import {Directive, Inject, Input} from '@angular/core';
 import {WINDOW} from '@ng-web-apis/common';
 import {
     tuiAsPositionAccessor,
@@ -7,42 +7,55 @@ import {
 } from '@taiga-ui/core/abstract';
 import {TuiPoint} from '@taiga-ui/core/types';
 
-import {
-    TUI_DROPDOWN_OFFSET,
-    TUI_DROPDOWN_OPTIONS,
-    TuiDropdownOptions,
-} from './dropdown-options.directive';
+import {TUI_DROPDOWN_OPTIONS, TuiDropdownOptions} from './dropdown-options.directive';
+import {TuiDropdownPositionDirective} from './dropdown-position.directive';
 
 @Directive({
-    selector: `[tuiDropdownSided]`,
-    providers: [tuiAsPositionAccessor(TuiDropdownPositionSidedDirective)],
+    selector: '[tuiDropdownSided]',
+    providers: [
+        TuiDropdownPositionDirective,
+        tuiAsPositionAccessor(TuiDropdownPositionSidedDirective),
+    ],
 })
 export class TuiDropdownPositionSidedDirective implements TuiPositionAccessor {
-    private previous = this.options.direction || `bottom`;
+    private previous = this.options.direction || 'bottom';
+
+    @Input()
+    tuiDropdownSided: boolean | string = '';
+
+    @Input()
+    tuiDropdownSidedOffset = 4;
 
     constructor(
         @Inject(TUI_DROPDOWN_OPTIONS) private readonly options: TuiDropdownOptions,
         @Inject(WINDOW) private readonly windowRef: Window,
         @Inject(TuiRectAccessor) private readonly accessor: TuiRectAccessor,
+        @Inject(TuiDropdownPositionDirective)
+        private readonly vertical: TuiPositionAccessor,
     ) {}
 
-    getPosition({height, width}: ClientRect): TuiPoint {
+    getPosition(rect: ClientRect): TuiPoint {
+        if (this.tuiDropdownSided === false) {
+            return this.vertical.getPosition(rect);
+        }
+
+        const {height, width} = rect;
         const hostRect = this.accessor.getClientRect();
         const {innerHeight, innerWidth} = this.windowRef;
-        const {align, direction, minHeight} = this.options;
+        const {align, direction, minHeight, offset} = this.options;
         const available = {
             top: hostRect.bottom,
-            left: hostRect.left - TUI_DROPDOWN_OFFSET,
-            right: innerWidth - hostRect.right - TUI_DROPDOWN_OFFSET,
+            left: hostRect.left - offset,
+            right: innerWidth - hostRect.right - offset,
             bottom: innerHeight - hostRect.top,
         } as const;
         const position = {
-            top: hostRect.bottom - height + 2 * TUI_DROPDOWN_OFFSET + 1, // 1 for border
-            left: hostRect.left - width - TUI_DROPDOWN_OFFSET,
-            right: hostRect.right + TUI_DROPDOWN_OFFSET,
-            bottom: hostRect.top - 2 * TUI_DROPDOWN_OFFSET - 1, // 1 for border
+            top: hostRect.bottom - height + this.tuiDropdownSidedOffset + 1, // 1 for border
+            left: hostRect.left - width - offset,
+            right: hostRect.right + offset,
+            bottom: hostRect.top - this.tuiDropdownSidedOffset - 1, // 1 for border
         } as const;
-        const better = available.top > available.bottom ? `top` : `bottom`;
+        const better = available.top > available.bottom ? 'top' : 'bottom';
         const maxLeft = available.left > available.right ? position.left : position.right;
         const left = available[align] > width ? position[align] : maxLeft;
 

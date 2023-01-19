@@ -4,31 +4,39 @@ import {
     ElementRef,
     Inject,
     OnInit,
+    Optional,
     TemplateRef,
 } from '@angular/core';
 import {NgControl} from '@angular/forms';
 import {
+    AbstractTuiMultipleControl,
     TUI_DEFAULT_IDENTITY_MATCHER,
     TuiContextWithImplicit,
     TuiIdentityMatcher,
     tuiIsPresent,
     tuiTypedFromEvent,
 } from '@taiga-ui/cdk';
-import {TUI_DATA_LIST_HOST, TuiDataListHost, TuiOptionComponent} from '@taiga-ui/core';
+import {
+    TUI_DATA_LIST_HOST,
+    TuiDataListComponent,
+    TuiDataListHost,
+    TuiOptionComponent,
+} from '@taiga-ui/core';
 import {POLYMORPHEUS_CONTEXT, PolymorpheusComponent} from '@tinkoff/ng-polymorpheus';
 import {EMPTY, merge} from 'rxjs';
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators';
 
 @Component({
-    selector: `tui-select-option`,
-    templateUrl: `./select-option.template.html`,
-    styleUrls: [`./select-option.style.less`],
+    selector: 'tui-select-option',
+    templateUrl: './select-option.template.html',
+    styleUrls: ['./select-option.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiSelectOptionComponent<T> implements OnInit {
     readonly selected$ = merge(
-        this.control.valueChanges || EMPTY,
-        tuiTypedFromEvent(this.elementRef.nativeElement, `animationstart`),
+        this.control.valueChanges ?? EMPTY,
+        this.host?.hostControl?.control?.valueChanges ?? EMPTY,
+        tuiTypedFromEvent(this.elementRef.nativeElement, 'animationstart'),
     ).pipe(
         startWith(null),
         map(() => this.selected),
@@ -39,9 +47,12 @@ export class TuiSelectOptionComponent<T> implements OnInit {
         @Inject(POLYMORPHEUS_CONTEXT)
         readonly context: TuiContextWithImplicit<TemplateRef<Record<string, unknown>>>,
         @Inject(TUI_DATA_LIST_HOST)
-        private readonly host: TuiDataListHost<T>,
+        protected readonly host: TuiDataListHost<T, AbstractTuiMultipleControl<string>>,
         @Inject(ElementRef) private readonly elementRef: ElementRef<HTMLElement>,
         @Inject(TuiOptionComponent) protected readonly option: TuiOptionComponent<T>,
+        @Optional()
+        @Inject(TuiDataListComponent)
+        protected readonly dataList: TuiDataListComponent<T> | null,
         @Inject(NgControl) protected readonly control: NgControl,
     ) {}
 

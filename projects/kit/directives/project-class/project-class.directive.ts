@@ -5,10 +5,10 @@ import {tuiDefaultProp} from '@taiga-ui/cdk';
  * A directive for projecting classes from nested children to host
  */
 @Directive({
-    selector: `[tuiProjectClass]`,
+    selector: '[tuiProjectClass]',
 })
 export class TuiProjectClassDirective implements AfterViewChecked {
-    @Input(`tuiProjectClass`)
+    @Input('tuiProjectClass')
     @tuiDefaultProp()
     classNames: readonly string[] = [];
 
@@ -20,11 +20,10 @@ export class TuiProjectClassDirective implements AfterViewChecked {
         this.classNames.forEach(className => {
             const hostElement = this.elementRef.nativeElement;
 
-            if (hostElement.querySelector(`.${className}`)) {
-                hostElement.classList.add(className);
-            } else {
-                hostElement.classList.remove(className);
-            }
+            hostElement.classList.toggle(
+                className,
+                !!hostElement.querySelector(`.${className}`),
+            );
         });
     }
 }

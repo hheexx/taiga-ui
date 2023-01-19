@@ -11,18 +11,18 @@ export const TUI_EDITOR_COLOR_SELECTOR_MODE_NAMES = new InjectionToken<[string, 
 
 export type EditorToolbarTexts =
     | TuiEditorTool
-    | 'redo'
+    | 'backColor'
     | 'font'
     | 'fontStyle'
-    | 'justifyLeft'
-    | 'justifyCenter'
-    | 'justifyRight'
-    | 'justifyFull'
-    | 'unorderedList'
-    | 'orderedList'
     | 'indent'
+    | 'justifyCenter'
+    | 'justifyFull'
+    | 'justifyLeft'
+    | 'justifyRight'
+    | 'orderedList'
     | 'outdent'
-    | 'backColor';
+    | 'redo'
+    | 'unorderedList';
 
 export const TUI_EDITOR_TOOLBAR_TEXTS = new InjectionToken(
     `[TUI_EDITOR_TOOLBAR_TEXTS]: tui-editor-toolbar i18n`,
@@ -35,6 +35,13 @@ export const TUI_EDITOR_TABLE_COMMANDS = new InjectionToken(
     `[TUI_EDITOR_TABLE_COMMANDS]: tui-editor-toolbar table i18n`,
     {
         factory: tuiExtractI18n(`editorTableCommands`),
+    },
+);
+
+export const TUI_EDITOR_LINK_TEXTS = new InjectionToken(
+    `[TUI_EDITOR_LINK_TEXTS]: tui-editor-toolbar edit-link i18n`,
+    {
+        factory: tuiExtractI18n(`editorEditLink`),
     },
 );
 

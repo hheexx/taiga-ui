@@ -16,16 +16,16 @@ import {
 import {
     tuiDefaultProp,
     tuiIsCurrentTarget,
-    tuiPure,
     tuiTypedFromEvent,
+    tuiZonefree,
 } from '@taiga-ui/cdk';
 import {TUI_HINT_COMPONENT, TuiHintDirective} from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject, timer} from 'rxjs';
 import {
     distinctUntilChanged,
     filter,
-    mapTo,
+    map,
     pairwise,
     startWith,
     switchMap,
@@ -35,9 +35,9 @@ import {TuiLineClampBoxComponent} from './line-clamp-box.component';
 import {TUI_LINE_CLAMP_OPTIONS, TuiLineClampOptions} from './line-clamp-options';
 
 @Component({
-    selector: `tui-line-clamp`,
-    templateUrl: `./line-clamp.template.html`,
-    styleUrls: [`./line-clamp.style.less`],
+    selector: 'tui-line-clamp',
+    templateUrl: './line-clamp.template.html',
+    styleUrls: ['./line-clamp.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {
@@ -54,6 +54,12 @@ export class TuiLineClampComponent implements AfterViewInit {
     private readonly isOverflown$ = new Subject<boolean>();
     private initialized = false;
 
+    @HostBinding('style.maxHeight.px')
+    maxHeight: number | null = null;
+
+    @HostBinding('style.height.px')
+    height = 0;
+
     @Input()
     @tuiDefaultProp()
     set linesLimit(linesLimit: number) {
@@ -66,11 +72,24 @@ export class TuiLineClampComponent implements AfterViewInit {
 
     @Input()
     @tuiDefaultProp()
-    content: PolymorpheusContent = ``;
+    content: PolymorpheusContent = '';
 
     @Output()
     readonly overflownChange: Observable<boolean> = this.isOverflown$.pipe(
         distinctUntilChanged(),
+    );
+
+    lineClamp$ = this.linesLimit$.pipe(
+        startWith(1),
+        pairwise(),
+        switchMap(([prev, next]) =>
+            next >= prev
+                ? of(next)
+                : tuiTypedFromEvent(this.elementRef.nativeElement, 'transitionend').pipe(
+                      filter(tuiIsCurrentTarget),
+                      map(() => next),
+                  ),
+        ),
     );
 
     constructor(
@@ -81,22 +100,6 @@ export class TuiLineClampComponent implements AfterViewInit {
         @Inject(TUI_LINE_CLAMP_OPTIONS) private readonly options: TuiLineClampOptions,
     ) {
         this.skipInitialTransition();
-    }
-
-    @tuiPure
-    get lineClamp$(): Observable<number> {
-        return this.linesLimit$.pipe(
-            startWith(1),
-            pairwise(),
-            switchMap(([prev, next]) =>
-                next >= prev
-                    ? of(next)
-                    : tuiTypedFromEvent(
-                          this.elementRef.nativeElement,
-                          `transitionend`,
-                      ).pipe(filter(tuiIsCurrentTarget), mapTo(next)),
-            ),
-        );
     }
 
     get overflown(): boolean {
@@ -112,20 +115,10 @@ export class TuiLineClampComponent implements AfterViewInit {
     }
 
     get computedContent(): PolymorpheusContent {
-        return this.options.showHint && this.overflown ? this.content : ``;
+        return this.options.showHint && this.overflown ? this.content : '';
     }
 
-    @HostBinding(`style.maxHeight.px`)
-    get maxHeight(): number | null {
-        return this.initialized ? this.lineHeight * this.linesLimit$.value : null;
-    }
-
-    @HostBinding(`style.height.px`)
-    get height(): number | null {
-        return !this.outlet ? 0 : this.outlet.nativeElement.scrollHeight + 4 || null;
-    }
-
-    @HostListener(`transitionend`)
+    @HostListener('transitionend')
     updateView(): void {
         this.cd.detectChanges();
     }
@@ -135,15 +128,26 @@ export class TuiLineClampComponent implements AfterViewInit {
     }
 
     ngDoCheck(): void {
+        this.updateStaticallyHostBinding();
         this.isOverflown$.next(this.overflown);
     }
 
     private skipInitialTransition(): void {
-        this.ngZone.runOutsideAngular(() => {
-            setTimeout(() => {
-                this.renderer.addClass(this.elementRef.nativeElement, `_initialized`);
+        timer(0)
+            .pipe(tuiZonefree(this.ngZone))
+            .subscribe(() => {
+                this.renderer.addClass(this.elementRef.nativeElement, '_initialized');
                 this.cd.detectChanges();
             });
-        });
+    }
+
+    private updateStaticallyHostBinding(): void {
+        if (this.outlet) {
+            this.height = this.outlet.nativeElement.scrollHeight + 4;
+        }
+
+        if (this.initialized) {
+            this.maxHeight = this.lineHeight * this.linesLimit$.value;
+        }
     }
 }

@@ -10,15 +10,18 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import {tuiDefaultProp} from '@taiga-ui/cdk';
+import {TuiContextWithImplicit, tuiDefaultProp} from '@taiga-ui/cdk';
 import {
     MODE_PROVIDER,
+    TEXTFIELD_CONTROLLER_PROVIDER,
     TUI_MODE,
+    TUI_TEXTFIELD_WATCHED_CONTROLLER,
     TuiBrightness,
     tuiSizeBigger,
     TuiSizeL,
     TuiSizeS,
     TuiSizeXS,
+    TuiTextfieldController,
 } from '@taiga-ui/core';
 import {TuiStatus} from '@taiga-ui/kit/types';
 import {tuiStringHashToHsl} from '@taiga-ui/kit/utils/format';
@@ -28,20 +31,20 @@ import {Observable} from 'rxjs';
 import {TUI_TAG_OPTIONS, TuiTagOptions} from './tag-options';
 
 @Component({
-    selector: `tui-tag, a[tuiTag]`,
-    templateUrl: `./tag.template.html`,
-    styleUrls: [`./tag.style.less`],
+    selector: 'tui-tag, a[tuiTag]',
+    templateUrl: './tag.template.html',
+    styleUrls: ['./tag.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [MODE_PROVIDER],
+    providers: [TEXTFIELD_CONTROLLER_PROVIDER, MODE_PROVIDER],
     host: {
-        '($.data-mode.attr)': `mode$`,
+        '($.data-mode.attr)': 'mode$',
     },
 })
 export class TuiTagComponent {
     // TODO: Possibly implement standard focus mechanisms and outline
     @Input()
     @tuiDefaultProp()
-    value = ``;
+    value = '';
 
     @Input()
     @tuiDefaultProp()
@@ -49,28 +52,28 @@ export class TuiTagComponent {
 
     @Input()
     @tuiDefaultProp()
-    separator: string | RegExp = `,`;
+    separator: RegExp | string = ',';
 
     @Input()
     @tuiDefaultProp()
     maxLength: number | null = null;
 
     @Input()
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     @tuiDefaultProp()
-    size: TuiSizeS | TuiSizeL = this.options.size;
+    size: TuiSizeL | TuiSizeS = this.options.size;
 
     @Input()
     @tuiDefaultProp()
     showLoader = false;
 
     @Input()
-    @HostBinding(`attr.data-tui-host-status`)
+    @HostBinding('attr.data-tui-host-status')
     @tuiDefaultProp()
     status: TuiStatus = this.options.status;
 
     @Input()
-    @HostBinding(`class._hoverable`)
+    @HostBinding('class._hoverable')
     @tuiDefaultProp()
     hoverable = false;
 
@@ -79,28 +82,28 @@ export class TuiTagComponent {
     removable = false;
 
     @Input()
-    @HostBinding(`class._disabled`)
+    @HostBinding('class._disabled')
     @tuiDefaultProp()
     disabled = false;
 
     @Input()
-    @HostBinding(`class._autocolor`)
+    @HostBinding('class._autocolor')
     @tuiDefaultProp()
     autoColor: boolean = this.options.autoColor;
 
     @Input()
     @tuiDefaultProp()
-    leftContent: PolymorpheusContent = ``;
+    leftContent: PolymorpheusContent = '';
 
     @Output()
     readonly edited = new EventEmitter<string>();
 
-    @HostBinding(`class._editing`)
+    @HostBinding('class._editing')
     editing = false;
 
     editedText: string | null = null;
 
-    @ViewChild(`input`, {read: ElementRef})
+    @ViewChild('input', {read: ElementRef})
     set input(input: ElementRef<HTMLInputElement>) {
         if (input) {
             input.nativeElement.focus();
@@ -111,6 +114,8 @@ export class TuiTagComponent {
         @Inject(ElementRef) private readonly elementRef: ElementRef<HTMLElement>,
         @Inject(TUI_MODE) readonly mode$: Observable<TuiBrightness | null>,
         @Inject(TUI_TAG_OPTIONS) private readonly options: TuiTagOptions,
+        @Inject(TUI_TEXTFIELD_WATCHED_CONTROLLER)
+        readonly controller: TuiTextfieldController,
     ) {}
 
     get backgroundColor(): string | null {
@@ -126,15 +131,19 @@ export class TuiTagComponent {
     }
 
     get loaderSize(): TuiSizeXS {
-        return tuiSizeBigger(this.size) ? `s` : `xs`;
+        return tuiSizeBigger(this.size) ? 's' : 'xs';
     }
 
-    @HostBinding(`class._has-icon`)
+    get iconCleaner(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeL | TuiSizeS>> {
+        return this.controller.options.iconCleaner;
+    }
+
+    @HostBinding('class._has-icon')
     get hasIcon(): boolean {
         return this.showLoader || this.removable;
     }
 
-    @HostListener(`keydown.enter`, [`$event`])
+    @HostListener('keydown.enter', ['$event'])
     edit(event: Event): void {
         if (!this.canEdit) {
             return;
@@ -145,8 +154,8 @@ export class TuiTagComponent {
         this.editedText = this.value;
     }
 
-    @HostListener(`keydown.delete`, [`$event`])
-    @HostListener(`keydown.backspace`, [`$event`])
+    @HostListener('keydown.delete', ['$event'])
+    @HostListener('keydown.backspace', ['$event'])
     remove(event: Event): void {
         if (!this.canRemove) {
             return;
@@ -154,7 +163,7 @@ export class TuiTagComponent {
 
         event.preventDefault();
         event.stopPropagation();
-        this.edited.emit(``);
+        this.edited.emit('');
     }
 
     onInput(value: string): void {
@@ -173,12 +182,12 @@ export class TuiTagComponent {
         event.stopPropagation();
 
         switch (event.key.toLowerCase()) {
-            case `enter`:
+            case 'enter':
                 event.preventDefault();
-                this.save(this.editedText || ``);
+                this.save(this.editedText || '');
                 break;
-            case `escape`:
-            case `esc`:
+            case 'escape':
+            case 'esc':
                 event.preventDefault();
                 this.stopEditing();
                 this.elementRef.nativeElement.focus();

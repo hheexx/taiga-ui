@@ -31,6 +31,9 @@
                 [tuiTextfieldLabelOutside]="labelOutside"
                 [tuiTextfieldSize]="size"
                 [tuiTextfieldCleaner]="cleaner"
+                [tuiTextfieldFiller]="filler"
+                [tuiTextfieldIconLeft]="iconLeft"
+                [tuiTextfieldCustomContent]="customContent"
                 [successMessage]="notificationTemplate"
                 [messageDirection]="hintDirection"
                 [messageAppearance]="hintAppearance"
@@ -38,6 +41,7 @@
                 [pseudoInvalid]="pseudoInvalid"
                 [pseudoFocus]="pseudoFocused"
                 [pseudoHover]="pseudoHovered"
+                [style.text-align]="textAlign"
             >
                 Type a text
             </tui-input-copy>
@@ -85,6 +89,18 @@
             </ng-template>
         </tui-doc-documentation>
         <inherited-documentation></inherited-documentation>
+        <tui-doc-documentation heading="CSS customization">
+            <ng-template
+                i18n
+                documentationPropertyMode="input"
+                documentationPropertyType="string"
+                documentationPropertyName="style.text-align"
+                [documentationPropertyValues]="textAlignVariants"
+                [(documentationPropertyValue)]="textAlign"
+            >
+                Custom align content by text-align
+            </ng-template>
+        </tui-doc-documentation>
     </ng-template>
     <ng-template #customTemplate>
         <i>Some custom content</i>

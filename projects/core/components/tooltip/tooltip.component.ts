@@ -5,6 +5,7 @@ import {
     HostListener,
     Inject,
     Input,
+    Self,
     ViewChild,
 } from '@angular/core';
 import {TUI_IS_MOBILE, tuiDefaultProp, TuiDestroyService} from '@taiga-ui/cdk';
@@ -21,12 +22,12 @@ import {EMPTY, Observable} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({
-    selector: `tui-tooltip`,
-    templateUrl: `./tooltip.template.html`,
-    styleUrls: [`./tooltip.style.less`],
+    selector: 'tui-tooltip',
+    templateUrl: './tooltip.template.html',
+    styleUrls: ['./tooltip.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TuiDestroyService, MODE_PROVIDER],
-    inputs: [`content`, `direction`, `appearance`, `showDelay`, `hideDelay`],
+    inputs: ['content', 'direction', 'appearance', 'showDelay', 'hideDelay'],
 })
 export class TuiTooltipComponent extends TuiHintOptionsDirective {
     private mode: TuiBrightness | null = null;
@@ -36,10 +37,10 @@ export class TuiTooltipComponent extends TuiHintOptionsDirective {
 
     @Input()
     @tuiDefaultProp()
-    describeId = ``;
+    describeId = '';
 
     constructor(
-        @Inject(TuiDestroyService) destroy$: Observable<unknown>,
+        @Self() @Inject(TuiDestroyService) destroy$: Observable<unknown>,
         @Inject(TUI_MODE) mode$: Observable<TuiBrightness | null>,
         @Inject(TUI_HINT_OPTIONS) options: TuiHintOptions,
         @Inject(TUI_IS_MOBILE) private readonly isMobile: boolean,
@@ -51,13 +52,13 @@ export class TuiTooltipComponent extends TuiHintOptionsDirective {
         });
     }
 
-    @HostBinding(`attr.data-appearance`)
+    @HostBinding('attr.data-appearance')
     get computedAppearance(): string {
-        return this.appearance || this.mode || ``;
+        return this.appearance || this.mode || '';
     }
 
-    @HostListener(`mousedown`, [`$event`])
-    @HostListener(`click`, [`$event`])
+    @HostListener('mousedown', ['$event'])
+    @HostListener('click', ['$event'])
     stopOnMobile(event: MouseEvent): void {
         if (this.isMobile) {
             event.preventDefault();

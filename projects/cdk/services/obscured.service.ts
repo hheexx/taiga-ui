@@ -23,8 +23,8 @@ import {TuiParentsScrollService} from './parents-scroll.service';
  * of elements that overlap given element edges
  */
 @Injectable()
-export class TuiObscuredService extends Observable<null | readonly Element[]> {
-    private readonly obscured$: Observable<null | readonly Element[]>;
+export class TuiObscuredService extends Observable<readonly Element[] | null> {
+    private readonly obscured$: Observable<readonly Element[] | null>;
 
     constructor(
         @Inject(TuiParentsScrollService)
@@ -33,7 +33,7 @@ export class TuiObscuredService extends Observable<null | readonly Element[]> {
         @Inject(ElementRef) {nativeElement}: ElementRef<Element>,
         @Inject(NgZone) ngZone: NgZone,
         @Inject(WINDOW) windowRef: Window,
-        @Inject(TuiDestroyService) destroy$: Observable<void>,
+        @Self() @Inject(TuiDestroyService) destroy$: Observable<void>,
         @Inject(ANIMATION_FRAME) animationFrame$: Observable<number>,
     ) {
         super(subscriber => this.obscured$.subscribe(subscriber));

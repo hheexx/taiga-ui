@@ -4,9 +4,11 @@ import {
     ElementRef,
     Inject,
     Input,
+    Self,
 } from '@angular/core';
 import {TUI_PREVIEW_TEXTS} from '@taiga-ui/addon-preview/tokens';
 import {
+    ALWAYS_FALSE_HANDLER,
     tuiClamp,
     tuiDefaultProp,
     TuiDestroyService,
@@ -20,16 +22,16 @@ import {
 import {tuiSlideInTop} from '@taiga-ui/core';
 import {TuiLanguagePreview} from '@taiga-ui/i18n';
 import {BehaviorSubject, combineLatest, merge, Observable} from 'rxjs';
-import {map, mapTo, startWith} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 
 const INITIAL_SCALE_COEF = 0.8;
 const EMPTY_COORDINATES: [number, number] = [0, 0];
 const ROTATION_ANGLE = 90;
 
 @Component({
-    selector: `tui-preview`,
-    templateUrl: `./preview.template.html`,
-    styleUrls: [`./preview.style.less`],
+    selector: 'tui-preview',
+    templateUrl: './preview.template.html',
+    styleUrls: ['./preview.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [tuiSlideInTop],
     providers: [TuiDestroyService],
@@ -58,17 +60,17 @@ export class TuiPreviewComponent {
         tuiDragAndDropFrom(this.elementRef.nativeElement).pipe(
             map(({stage}) => stage !== TuiDragStage.Continues),
         ),
-        tuiTypedFromEvent(this.elementRef.nativeElement, `touchmove`, {
+        tuiTypedFromEvent(this.elementRef.nativeElement, 'touchmove', {
             passive: true,
-        }).pipe(mapTo(false)),
-        tuiTypedFromEvent(this.elementRef.nativeElement, `wheel`, {passive: true}).pipe(
-            mapTo(false),
+        }).pipe(map(ALWAYS_FALSE_HANDLER)),
+        tuiTypedFromEvent(this.elementRef.nativeElement, 'wheel', {passive: true}).pipe(
+            map(ALWAYS_FALSE_HANDLER),
         ),
     );
 
     readonly cursor$ = tuiDragAndDropFrom(this.elementRef.nativeElement).pipe(
-        map(({stage}) => (stage === TuiDragStage.Continues ? `grabbing` : `initial`)),
-        startWith(`initial`),
+        map(({stage}) => (stage === TuiDragStage.Continues ? 'grabbing' : 'initial')),
+        startWith('initial'),
     );
 
     readonly wrapperTransform$ = combineLatest([
@@ -84,7 +86,7 @@ export class TuiPreviewComponent {
 
     constructor(
         @Inject(ElementRef) readonly elementRef: ElementRef<HTMLElement>,
-        @Inject(TuiDestroyService) readonly destroy$: Observable<void>,
+        @Self() @Inject(TuiDestroyService) readonly destroy$: Observable<void>,
         @Inject(TUI_PREVIEW_TEXTS)
         readonly texts$: Observable<TuiLanguagePreview['previewTexts']>,
     ) {}

@@ -68,7 +68,24 @@
             id="virtual"
             heading="Virtual scroll"
             [content]="example7"
+            [description]="cdkVirtualScrollDescription"
         >
+            <ng-template #cdkVirtualScrollDescription>
+                You can use
+                <code>MultiSelect</code>
+                with
+                <code>ScrollingModule</code>
+                from
+                <a
+                    tuiLink
+                    href="https://material.angular.io/cdk/scrolling/overview"
+                    rel="noreferrer"
+                    target="_blank"
+                >
+                    @angular/cdk/scrolling
+                </a>
+                .
+            </ng-template>
             <tui-multi-select-example-7></tui-multi-select-example-7>
         </tui-doc-example>
 
@@ -100,6 +117,7 @@
                     [tuiDropdownLimitWidth]="dropdownLimitWidth"
                     [tuiDropdownMinHeight]="dropdownMinHeight"
                     [tuiDropdownMaxHeight]="dropdownMaxHeight"
+                    [tuiDropdownOffset]="dropdownOffset"
                     [tuiTextfieldCleaner]="cleaner"
                     [tuiTextfieldLabelOutside]="labelOutside"
                     [tuiTextfieldSize]="size"
@@ -110,6 +128,7 @@
                     [disabledItemHandler]="disabledItemHandler"
                     [editable]="editable"
                     [expandable]="expandable"
+                    [rows]="rows"
                     [identityMatcher]="identityMatcher"
                     [readOnly]="readOnly"
                     [stringify]="stringify"
@@ -196,6 +215,17 @@
                 [(documentationPropertyValue)]="expandable"
             >
                 Control height can be expanded to show all tags
+            </ng-template>
+            <ng-template
+                i18n
+                documentationPropertyName="rows"
+                documentationPropertyMode="input"
+                documentationPropertyType="number"
+                [(documentationPropertyValue)]="rows"
+            >
+                A number of visible rows in
+                <code>expandable</code>
+                mode
             </ng-template>
             <ng-template
                 i18n

@@ -14,23 +14,26 @@ import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import {Subject} from 'rxjs';
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators';
 
-import {TuiTreeController, TuiTreeItemContext} from '../../misc/tree.interfaces';
+import type {TuiTreeController, TuiTreeItemContext} from '../../misc/tree.interfaces';
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {
     TUI_TREE_CONTENT,
     TUI_TREE_CONTROLLER,
     TUI_TREE_LEVEL,
     TUI_TREE_NODE,
 } from '../../misc/tree.tokens';
+// eslint-disable-next-line import/no-cycle
 import {TUI_TREE_ITEM_PROVIDERS} from './tree-item.providers';
 
 @Component({
-    selector: `tui-tree-item`,
-    templateUrl: `./tree-item.template.html`,
-    styleUrls: [`./tree-item.style.less`],
+    selector: 'tui-tree-item',
+    templateUrl: './tree-item.template.html',
+    styleUrls: ['./tree-item.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: TUI_TREE_ITEM_PROVIDERS,
     host: {
-        role: `treeitem`,
+        role: 'treeitem',
     },
 })
 export class TuiTreeItemComponent implements DoCheck {
@@ -61,7 +64,7 @@ export class TuiTreeItemComponent implements DoCheck {
         readonly content: PolymorpheusContent<TuiTreeItemContext>,
     ) {}
 
-    @HostBinding(`class._expandable`)
+    @HostBinding('class._expandable')
     get isExpandable(): boolean {
         return !!this.nested.length;
     }

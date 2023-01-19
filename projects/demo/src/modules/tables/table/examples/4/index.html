@@ -19,6 +19,7 @@
         <button
             tuiButton
             size="m"
+            type="button"
             [iconRight]="arrow"
         >
             Columns
@@ -73,11 +74,12 @@
             </tr>
         </thead>
         <tbody
+            *tuiLet="data | tuiTableSort as sortedData"
             tuiTbody
-            [data]="data"
+            [data]="sortedData"
         >
             <tr
-                *tuiRow="let item of data"
+                *ngFor="let item of sortedData"
                 tuiTr
             >
                 <td

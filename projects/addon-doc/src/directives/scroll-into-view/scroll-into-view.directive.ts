@@ -1,12 +1,12 @@
-import {Directive, ElementRef, Inject, Input} from '@angular/core';
+import {Directive, ElementRef, Inject, Input, Self} from '@angular/core';
 import {TuiDestroyService, tuiGetElementObscures} from '@taiga-ui/cdk';
 import {Observable, ReplaySubject} from 'rxjs';
-import {debounceTime, filter, switchMapTo, takeUntil} from 'rxjs/operators';
+import {debounceTime, filter, switchMap, takeUntil} from 'rxjs/operators';
 
 import {TUI_DOC_PAGE_LOADED} from '../../tokens/page-loaded';
 
 @Directive({
-    selector: `[tuiScrollIntoViewLink]`,
+    selector: '[tuiScrollIntoViewLink]',
     providers: [TuiDestroyService],
 })
 export class TuiScrollIntoViewLinkDirective {
@@ -18,7 +18,7 @@ export class TuiScrollIntoViewLinkDirective {
     private readonly scroll$ = new ReplaySubject<boolean>(1);
 
     constructor(
-        @Inject(TuiDestroyService) destroy$: TuiDestroyService,
+        @Self() @Inject(TuiDestroyService) destroy$: TuiDestroyService,
         @Inject(ElementRef) {nativeElement}: ElementRef<HTMLElement>,
         @Inject(TUI_DOC_PAGE_LOADED)
         readonly readyToScroll$: Observable<boolean>,
@@ -26,7 +26,7 @@ export class TuiScrollIntoViewLinkDirective {
         this.readyToScroll$
             .pipe(
                 filter(Boolean),
-                switchMapTo(this.scroll$),
+                switchMap(() => this.scroll$),
                 debounceTime(750),
                 filter(shallWe => shallWe && !!tuiGetElementObscures(nativeElement)),
                 takeUntil(destroy$),

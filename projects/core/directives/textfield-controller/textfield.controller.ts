@@ -5,20 +5,28 @@ import {Observable} from 'rxjs';
 
 import {TuiTextfieldCleanerDirective} from './textfield-cleaner.directive';
 import {TuiTextfieldCustomContentDirective} from './textfield-custom-content.directive';
+import {TuiTextfieldFillerDirective} from './textfield-filler.directive';
 import {TuiTextfieldIconDirective} from './textfield-icon.directive';
 import {TuiTextfieldIconLeftDirective} from './textfield-icon-left.directive';
 import {TuiTextfieldLabelOutsideDirective} from './textfield-label-outside.directive';
+import {TuiTextfieldOptions} from './textfield-options';
+import {TuiTextfieldPostfixDirective} from './textfield-postfix.directive';
+import {TuiTextfieldPrefixDirective} from './textfield-prefix.directive';
 import {TuiTextfieldSizeDirective} from './textfield-size.directive';
 
 export class TuiTextfieldController {
     constructor(
         readonly change$: Observable<void>,
+        readonly options: TuiTextfieldOptions,
         private readonly cleanerDirective: TuiTextfieldCleanerDirective,
         private readonly customContentDirective: TuiTextfieldCustomContentDirective,
         private readonly iconDirective: TuiTextfieldIconDirective,
         private readonly iconLeftDirective: TuiTextfieldIconLeftDirective,
         private readonly labelOutsideDirective: TuiTextfieldLabelOutsideDirective,
         private readonly sizeDirective: TuiTextfieldSizeDirective,
+        private readonly prefixDirective: TuiTextfieldPrefixDirective,
+        private readonly postfixDirective: TuiTextfieldPostfixDirective,
+        private readonly fillerDirective: TuiTextfieldFillerDirective,
     ) {}
 
     get cleaner(): boolean {
@@ -29,11 +37,11 @@ export class TuiTextfieldController {
         return this.customContentDirective.customContent || ``;
     }
 
-    get icon(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeS | TuiSizeL>> {
+    get icon(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeL | TuiSizeS>> {
         return this.iconDirective.icon;
     }
 
-    get iconLeft(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeS | TuiSizeL>> {
+    get iconLeft(): PolymorpheusContent<TuiContextWithImplicit<TuiSizeL | TuiSizeS>> {
         return this.iconLeftDirective.iconLeft;
     }
 
@@ -41,7 +49,19 @@ export class TuiTextfieldController {
         return this.labelOutsideDirective.labelOutside;
     }
 
-    get size(): TuiSizeS | TuiSizeL {
+    get size(): TuiSizeL | TuiSizeS {
         return this.sizeDirective.size;
+    }
+
+    get prefix(): string {
+        return this.prefixDirective.prefix;
+    }
+
+    get postfix(): string {
+        return this.postfixDirective.postfix;
+    }
+
+    get filler(): string {
+        return this.fillerDirective.filler;
     }
 }

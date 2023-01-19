@@ -14,11 +14,7 @@ import {
     TuiHorizontalDirection,
     TuiVerticalDirection,
 } from '@taiga-ui/core/types';
-
-/**
- * Safe space around host and screen edges
- */
-export const TUI_DROPDOWN_OFFSET = 4;
+import {tuiOverrideOptions} from '@taiga-ui/core/utils';
 
 export interface TuiDropdownOptions {
     readonly align: TuiHorizontalDirection;
@@ -26,19 +22,21 @@ export interface TuiDropdownOptions {
     readonly limitWidth: TuiDropdownWidth;
     readonly minHeight: number;
     readonly maxHeight: number;
+    readonly offset: number;
 }
 
 /** Default values for dropdown options */
 export const TUI_DROPDOWN_DEFAULT_OPTIONS: TuiDropdownOptions = {
-    align: `left`,
+    align: 'left',
     direction: null,
-    limitWidth: `auto`,
+    limitWidth: 'auto',
     maxHeight: 400,
     minHeight: 80,
+    offset: 4,
 };
 
 export const TUI_DROPDOWN_OPTIONS = new InjectionToken<TuiDropdownOptions>(
-    `[TUI_DROPDOWN_OPTIONS] Default parameters for dropdown directive`,
+    '[TUI_DROPDOWN_OPTIONS] Default parameters for dropdown directive',
     {
         factory: () => TUI_DROPDOWN_DEFAULT_OPTIONS,
     },
@@ -52,23 +50,12 @@ export const tuiDropdownOptionsProvider: (
         [new Optional(), TuiDropdownOptionsDirective],
         [new SkipSelf(), TUI_DROPDOWN_OPTIONS],
     ],
-    useFactory: (
-        directive: TuiDropdownOptionsDirective | null,
-        options: TuiDropdownOptions,
-    ): TuiDropdownOptions => {
-        const result = directive || {...options};
-
-        Object.keys(override).forEach(key => {
-            // Update directive props with new defaults before inputs are processed
-            (result as any)[key] = override[key as keyof TuiDropdownOptions];
-        });
-
-        return result;
-    },
+    useFactory: tuiOverrideOptions(override),
 });
 
 @Directive({
-    selector: `[tuiDropdownAlign], [tuiDropdownDirection], [tuiDropdownLimitWidth], [tuiDropdownMinHeight], [tuiDropdownMaxHeight]`,
+    selector:
+        '[tuiDropdownAlign], [tuiDropdownDirection], [tuiDropdownLimitWidth], [tuiDropdownMinHeight], [tuiDropdownMaxHeight], [tuiDropdownOffset]',
     providers: [
         {
             provide: TUI_DROPDOWN_OPTIONS,
@@ -77,25 +64,29 @@ export const tuiDropdownOptionsProvider: (
     ],
 })
 export class TuiDropdownOptionsDirective implements TuiDropdownOptions {
-    @Input(`tuiDropdownAlign`)
+    @Input('tuiDropdownAlign')
     @tuiDefaultProp()
     align = this.options.align;
 
-    @Input(`tuiDropdownDirection`)
+    @Input('tuiDropdownDirection')
     @tuiDefaultProp()
     direction = this.options.direction;
 
-    @Input(`tuiDropdownLimitWidth`)
+    @Input('tuiDropdownLimitWidth')
     @tuiDefaultProp()
     limitWidth = this.options.limitWidth;
 
-    @Input(`tuiDropdownMinHeight`)
+    @Input('tuiDropdownMinHeight')
     @tuiDefaultProp()
     minHeight = this.options.minHeight;
 
-    @Input(`tuiDropdownMaxHeight`)
+    @Input('tuiDropdownMaxHeight')
     @tuiDefaultProp()
     maxHeight = this.options.maxHeight;
+
+    @Input('tuiDropdownOffset')
+    @tuiDefaultProp()
+    offset = this.options.offset;
 
     constructor(
         @SkipSelf()

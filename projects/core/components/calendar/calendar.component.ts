@@ -23,19 +23,17 @@ import {TuiWithOptionalMinMax} from '@taiga-ui/core/interfaces';
 import {TuiMarkerHandler} from '@taiga-ui/core/types';
 
 @Component({
-    selector: `tui-calendar`,
-    templateUrl: `./calendar.template.html`,
-    styleUrls: [`./calendar.style.less`],
+    selector: 'tui-calendar',
+    templateUrl: './calendar.template.html',
+    styleUrls: ['./calendar.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiCalendarComponent implements TuiWithOptionalMinMax<TuiDay> {
-    @Input()
-    @tuiDefaultProp()
-    month: TuiMonth = TuiMonth.currentLocal();
+    private _value: TuiDay | TuiDayRange | null = null;
 
     @Input()
     @tuiDefaultProp()
-    value: TuiDayRange | TuiDay | null = null;
+    month: TuiMonth = TuiMonth.currentLocal();
 
     @Input()
     @tuiDefaultProp()
@@ -68,6 +66,20 @@ export class TuiCalendarComponent implements TuiWithOptionalMinMax<TuiDay> {
     @Input()
     @tuiDefaultProp()
     markerHandler: TuiMarkerHandler = TUI_DEFAULT_MARKER_HANDLER;
+
+    @Input()
+    @tuiDefaultProp()
+    set value(value: TuiDay | TuiDayRange | null) {
+        this._value = value;
+
+        if (this.showAdjacent && value instanceof TuiDay) {
+            this.month = value;
+        }
+    }
+
+    get value(): TuiDay | TuiDayRange | null {
+        return this._value;
+    }
 
     @Output()
     readonly dayClick = new EventEmitter<TuiDay>();

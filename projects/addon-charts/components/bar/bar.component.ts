@@ -4,9 +4,9 @@ import {tuiDefaultProp, tuiPure, tuiSum} from '@taiga-ui/cdk';
 import {TuiSizeL, TuiSizeS} from '@taiga-ui/core';
 
 @Component({
-    selector: `tui-bar`,
-    templateUrl: `./bar.template.html`,
-    styleUrls: [`./bar.style.less`],
+    selector: 'tui-bar',
+    templateUrl: './bar.template.html',
+    styleUrls: ['./bar.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiBarComponent {
@@ -15,16 +15,16 @@ export class TuiBarComponent {
     value: readonly number[] = [];
 
     @Input()
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     @tuiDefaultProp()
-    size: TuiSizeS | TuiSizeL = `m`;
+    size: TuiSizeL | TuiSizeS = 'm';
 
     getHeight(value: number): number {
         return (100 * value) / this.getSum(this.value);
     }
 
     getColor(index: number): SafeValue {
-        return `var(--tui-chart-${index}`;
+        return `var(--tui-chart-${index})`;
     }
 
     @tuiPure

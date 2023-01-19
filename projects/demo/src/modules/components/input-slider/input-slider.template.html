@@ -63,7 +63,9 @@
                 i18n
                 class="tui-space_bottom-8 tui-space_top-0"
             >
-                <dt><strong>Key steps</strong></dt>
+                <dt>
+                    <strong>Key steps</strong>
+                </dt>
                 <dd>anchor points of non-uniform format between value and position</dd>
             </dl>
             <tui-input-slider-example-3></tui-input-slider-example-3>
@@ -123,6 +125,8 @@
                     [pseudoFocus]="pseudoFocused"
                     [pseudoHover]="pseudoHovered"
                     [pseudoActive]="pseudoPressed"
+                    [tuiTextfieldPrefix]="prefix"
+                    [tuiTextfieldPostfix]="postfix"
                     [tuiTextfieldCleaner]="cleaner"
                     [tuiTextfieldCustomContent]="customContentSelected"
                     [tuiTextfieldIconLeft]="iconLeft"
@@ -229,18 +233,24 @@
                 documentationPropertyName="prefix"
                 documentationPropertyMode="input"
                 documentationPropertyType="string"
+                [documentationPropertyDeprecated]="true"
                 [(documentationPropertyValue)]="prefix"
             >
-                A prefix symbol, like currency
+                A prefix symbol, like currency. Use
+                <code>tuiTextfieldPrefix</code>
+                instead
             </ng-template>
             <ng-template
                 i18n
                 documentationPropertyName="postfix"
                 documentationPropertyMode="input"
                 documentationPropertyType="string"
+                [documentationPropertyDeprecated]="true"
                 [(documentationPropertyValue)]="postfix"
             >
-                A postfix symbol, like currency
+                A postfix symbol, like currency. Use
+                <code>tuiTextfieldPostfix</code>
+                instead
             </ng-template>
         </tui-doc-documentation>
         <inherited-documentation></inherited-documentation>

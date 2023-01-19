@@ -12,29 +12,32 @@ import {TuiRouterLinkActiveService} from '@taiga-ui/core';
 import {identity, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiStepperComponent} from '../stepper.component';
 
 @Component({
-    selector: `button[tuiStep], a[tuiStep]:not([routerLink]), a[tuiStep][routerLink][routerLinkActive]`,
-    templateUrl: `./step.template.html`,
-    styleUrls: [`./step.style.less`],
+    selector:
+        'button[tuiStep], a[tuiStep]:not([routerLink]), a[tuiStep][routerLink][routerLinkActive]',
+    templateUrl: './step.template.html',
+    styleUrls: ['./step.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TuiDestroyService, TuiRouterLinkActiveService, TuiFocusVisibleService],
     host: {
-        type: `button`,
+        type: 'button',
     },
 })
 export class TuiStepComponent {
     @Input()
-    @HostBinding(`attr.data-state`)
+    @HostBinding('attr.data-state')
     @tuiDefaultProp()
-    stepState: 'normal' | 'pass' | 'error' = `normal`;
+    stepState: 'error' | 'normal' | 'pass' = 'normal';
 
     @Input()
     @tuiDefaultProp()
-    icon = ``;
+    icon = '';
 
-    @HostBinding(`class._focus-visible`)
+    @HostBinding('class._focus-visible')
     focusVisible = false;
 
     constructor(
@@ -52,17 +55,17 @@ export class TuiStepComponent {
         });
     }
 
-    @HostBinding(`class._active`)
+    @HostBinding('class._active')
     get isActive(): boolean {
         return this.stepper.isActive(this.index);
     }
 
-    @HostBinding(`class._vertical`)
+    @HostBinding('class._vertical')
     get isVertical(): boolean {
-        return this.stepper.orientation === `vertical`;
+        return this.stepper.orientation === 'vertical';
     }
 
-    @HostBinding(`tabIndex`)
+    @HostBinding('tabIndex')
     get tabIndex(): number {
         return this.isActive ? 0 : -1;
     }
@@ -71,7 +74,7 @@ export class TuiStepComponent {
         return this.stepper.indexOf(this.elementRef.nativeElement);
     }
 
-    @HostListener(`click`)
+    @HostListener('click')
     activate(): void {
         this.stepper.activate(this.index);
     }

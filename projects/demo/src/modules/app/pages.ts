@@ -40,6 +40,12 @@ export const pages: TuiDocPages = [
     },
     {
         section: $localize`Documentation`,
+        title: `StackBlitz`,
+        keywords: `reproduce, issue, bug, sandbox, playground, test`,
+        route: `stackblitz`,
+    },
+    {
+        section: $localize`Documentation`,
         title: $localize`Testing`,
         subPages: [
             {
@@ -62,82 +68,76 @@ export const pages: TuiDocPages = [
             },
         ],
     },
-    // Common
+    // Foundations
     {
-        section: $localize`Common`,
+        section: $localize`Foundations`,
         title: $localize`Typography`,
         keywords: `layout, text, верстка, markup, font, текст, шрифты, гельветика, sans, typography`,
         route: `/typography`,
     },
     {
-        section: $localize`Common`,
+        section: $localize`Foundations`,
         title: $localize`Breakpoints`,
         keywords: `css, breakpoint, breakpoints, media, query, брейкпоинты, responsive, adaptive, адаптив`,
         route: `/breakpoints`,
     },
     {
-        section: $localize`Common`,
+        section: $localize`Foundations`,
         title: $localize`Colors`,
         keywords: `layout, верстка, palette, markup, цвет, палитра`,
         route: `/colors`,
     },
     {
-        section: $localize`Common`,
-        title: $localize`Grid`,
-        keywords: `верстка, markup, layout, grid, сетка, стили`,
-        route: `/grid`,
-    },
-    {
-        section: $localize`Common`,
+        section: $localize`Foundations`,
         title: $localize`Icons`,
         keywords: `img, layout, markup, icons, image, картинка, свг, svg, графика`,
         route: `/icons`,
     },
     {
-        section: $localize`Common`,
+        section: $localize`Foundations`,
         title: $localize`Styles`,
         subPages: [
             {
-                section: $localize`Common`,
+                section: $localize`Foundations`,
                 title: $localize`Shadows`,
                 keywords: `layout, markup, тень, shadows`,
                 route: `/shadows`,
             },
             {
-                section: $localize`Common`,
+                section: $localize`Foundations`,
                 title: $localize`Lists`,
                 keywords: `layout, markup, списки, стили, список, точки, list, ol, ul, li, немаркированный, маркированный`,
                 route: `/lists`,
             },
             {
-                section: $localize`Common`,
+                section: $localize`Foundations`,
                 title: $localize`Spaces`,
                 keywords: `layout, markup, отступы, margin, padding, маржин, падинг, spaces`,
                 route: `/spaces`,
             },
             {
-                section: $localize`Common`,
+                section: $localize`Foundations`,
+                title: $localize`Grid`,
+                keywords: `верстка, markup, layout, grid, сетка, стили`,
+                route: `/grid`,
+            },
+            {
+                section: $localize`Foundations`,
                 title: $localize`Tables`,
                 keywords: `верстка, markup, таблицы, tables`,
                 route: `/tables`,
             },
             {
-                section: $localize`Common`,
+                section: $localize`Foundations`,
                 title: $localize`Skeleton`,
                 keywords: `верстка, markup, скелетон, loader, загрузка, skeleton`,
                 route: `/skeleton`,
             },
             {
-                section: $localize`Common`,
+                section: $localize`Foundations`,
                 title: $localize`Form`,
                 keywords: `верстка, markup, форма, ввод, пример, input, form`,
                 route: `/form`,
-            },
-            {
-                section: $localize`Common`,
-                title: $localize`Mobile`,
-                keywords: `верстка, pwa, мобильные, нативные`,
-                route: `/mobile-themes`,
             },
         ],
     },
@@ -157,7 +157,7 @@ export const pages: TuiDocPages = [
     {
         section: $localize`Components`,
         title: `Avatar`,
-        keywords: `аватар, image, pic, картинка, изображение, avatar`,
+        keywords: `аватар, image, pic, картинка, изображение, avatar, stack`,
         route: `/components/avatar`,
     },
     {
@@ -221,72 +221,6 @@ export const pages: TuiDocPages = [
         title: `Carousel`,
         keywords: `карусель, слайдер, slider, carousel`,
         route: `/components/carousel`,
-    },
-    {
-        section: $localize`Components`,
-        title: `Charts`,
-        subPages: [
-            {
-                section: $localize`Components`,
-                title: `ArcChart`,
-                keywords: `график, чарт, chart, graph, line, столбик, диаграмма, дуга, кольцо`,
-                route: `/components/arc-chart`,
-            },
-            {
-                section: $localize`Components`,
-                title: `Axes`,
-                keywords: `график, чарт, chart, graph, line, столбик, диаграмма, оси, координаты`,
-                route: `/components/axes`,
-            },
-            {
-                section: $localize`Components`,
-                title: `Bar`,
-                keywords: `график, чарт, chart, graph, line, столбик, диаграмма`,
-                route: `/components/bar`,
-            },
-            {
-                section: $localize`Components`,
-                title: `BarChart`,
-                keywords: `график, чарт, chart, graph, line, столбик, диаграмма`,
-                route: `/components/bar-chart`,
-            },
-            {
-                section: $localize`Components`,
-                title: `BarSet`,
-                keywords: `график, чарт, chart, graph, line, столбик, диаграмма`,
-                route: `/components/bar-set`,
-            },
-            {
-                section: $localize`Components`,
-                title: `LegendItem`,
-                keywords: `график, легенда, подпись, диаграмма`,
-                route: `/components/legend-item`,
-            },
-            {
-                section: $localize`Components`,
-                title: `LineChart`,
-                keywords: `график, линия, кривая, диаграмма`,
-                route: `/components/line-chart`,
-            },
-            {
-                section: $localize`Components`,
-                title: `LineDaysChart`,
-                keywords: `график, линия, кривая, диаграмма, год, месяц`,
-                route: `/components/line-days-chart`,
-            },
-            {
-                section: $localize`Components`,
-                title: `PieChart`,
-                keywords: `график, чарт, chart, graph, пирог, круг, диаграмма`,
-                route: `/components/pie-chart`,
-            },
-            {
-                section: $localize`Components`,
-                title: `RingChart`,
-                keywords: `график, чарт, chart, graph, кольцо, круг, диаграмма`,
-                route: `/components/ring-chart`,
-            },
-        ],
     },
     {
         section: $localize`Components`,
@@ -566,6 +500,12 @@ export const pages: TuiDocPages = [
             },
             {
                 section: $localize`Components`,
+                title: `InputYear`,
+                keywords: `поле, инпут, форма, ввод, input, год, дата`,
+                route: `/components/input-year`,
+            },
+            {
+                section: $localize`Components`,
                 title: `PrimitiveTextfield`,
                 keywords: `текст, инпут, база, input`,
                 route: `/components/primitive-textfield`,
@@ -575,12 +515,6 @@ export const pages: TuiDocPages = [
                 title: `TextArea`,
                 keywords: `поле, инпут, форма, ввод, text-area, area`,
                 route: `/components/text-area`,
-            },
-            {
-                section: $localize`Components`,
-                title: `Editor`,
-                keywords: `wysiwyg, редактор, текст, html, rich, text, input, инпут, ввод`,
-                route: `/components/editor`,
             },
             {
                 section: $localize`Components`,
@@ -595,6 +529,12 @@ export const pages: TuiDocPages = [
         title: `Island`,
         keywords: `Island, остров, плашка`,
         route: `/components/island`,
+    },
+    {
+        section: $localize`Components`,
+        title: `ItemsWithMore`,
+        keywords: `список, list, items, элементы, more, больше, overflow`,
+        route: `/components/items-with-more`,
     },
     {
         section: $localize`Components`,
@@ -858,6 +798,12 @@ export const pages: TuiDocPages = [
     },
     {
         section: $localize`Components`,
+        title: `Tiles`,
+        keywords: `tile, grid, грид, widgets, drag, drop`,
+        route: `/components/tiles`,
+    },
+    {
+        section: $localize`Components`,
         title: `Toggle`,
         keywords: `инпут, форма, ввод, toggle, переключение`,
         route: `/components/toggle`,
@@ -867,6 +813,128 @@ export const pages: TuiDocPages = [
         title: `Tree`,
         keywords: `tree, view, multi, recursive, folders, рекурсия, дерево, папки`,
         route: `/components/tree`,
+    },
+    // Charts
+    {
+        section: $localize`Charts`,
+        title: `ArcChart`,
+        keywords: `график, чарт, chart, graph, line, столбик, диаграмма, дуга, кольцо`,
+        route: `/charts/arc-chart`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `Axes`,
+        keywords: `график, чарт, chart, graph, line, столбик, диаграмма, оси, координаты`,
+        route: `/charts/axes`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `Bar`,
+        keywords: `график, чарт, chart, graph, line, столбик, диаграмма`,
+        route: `/charts/bar`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `BarChart`,
+        keywords: `график, чарт, chart, graph, line, столбик, диаграмма`,
+        route: `/charts/bar-chart`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `BarSet`,
+        keywords: `график, чарт, chart, graph, line, столбик, диаграмма`,
+        route: `/charts/bar-set`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `LegendItem`,
+        keywords: `график, chart, легенда, подпись, диаграмма`,
+        route: `/charts/legend-item`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `LineChart`,
+        keywords: `график, chart, линия, кривая, диаграмма`,
+        route: `/charts/line-chart`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `LineDaysChart`,
+        keywords: `график, chart, линия, кривая, диаграмма, год, месяц`,
+        route: `/charts/line-days-chart`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `PieChart`,
+        keywords: `график, чарт, chart, graph, пирог, круг, диаграмма`,
+        route: `/charts/pie-chart`,
+    },
+    {
+        section: $localize`Charts`,
+        title: `RingChart`,
+        keywords: `график, чарт, chart, graph, кольцо, круг, диаграмма`,
+        route: `/charts/ring-chart`,
+    },
+    // Editor
+    {
+        section: $localize`Editor`,
+        title: `Getting started`,
+        keywords: `editor, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/getting-started`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Custom tool`,
+        keywords: `editor, custom, tool, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/custom-tool`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Resizable images`,
+        keywords: `editor, resizable, image, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/resizable-images`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Preview images`,
+        keywords: `editor, preview, images, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/preview-images`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Processing content`,
+        keywords: `editor, processing, content, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/processing-content`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Uploading images`,
+        keywords: `editor, upload, images, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/uploading-images`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Groups`,
+        keywords: `editor, draggable, nested, hilite, groups, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/groups`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Anchors`,
+        keywords: `editor, anchors, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/anchors`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Upload files`,
+        keywords: `editor, upload, files, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/upload-files`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Markdown`,
+        keywords: `editor, markdown, wysiwyg, редактор, текст, html, rich, text`,
+        route: `/editor/markdown`,
     },
     // Navigation
     {
@@ -890,7 +958,7 @@ export const pages: TuiDocPages = [
     {
         section: $localize`Navigation`,
         title: `Tabs`,
-        keywords: `mobile, ios, android, шаги, таб, tab, tabs`,
+        keywords: `mobile, ios, android, шаги, таб, tab, tabs, vertical`,
         route: `/navigation/tabs`,
     },
     // Customization
@@ -1033,6 +1101,12 @@ export const pages: TuiDocPages = [
             },
             {
                 section: $localize`Tools`,
+                title: `Resizer`,
+                keywords: `scale, drag, размер, ресайз`,
+                route: `/directives/resizer`,
+            },
+            {
+                section: $localize`Tools`,
                 title: `Swipe`,
                 keywords: `swipe, свайп`,
                 route: `/directives/swipe`,
@@ -1140,6 +1214,12 @@ export const pages: TuiDocPages = [
                 title: `FormatPhone`,
                 keywords: `format, форматирование, преобразование, phone, телефон, пайп, pipe`,
                 route: `/pipes/format-phone`,
+            },
+            {
+                section: $localize`Tools`,
+                title: `IsPresent`,
+                keywords: `present, существует, ngif, if, пайп, pipe, null, undefined, nil`,
+                route: `/pipes/is-present`,
             },
             {
                 section: $localize`Tools`,

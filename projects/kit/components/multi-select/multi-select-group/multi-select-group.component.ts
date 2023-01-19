@@ -14,28 +14,27 @@ import {
     tuiDefaultProp,
     tuiGetOriginalArrayFromQueryList,
     TuiIdentityMatcher,
+    TuiInjectionTokenType,
     tuiIsPresent,
     tuiItemsQueryListObservable,
     tuiPure,
 } from '@taiga-ui/cdk';
 import {
     TUI_DATA_LIST_HOST,
-    tuiAsOptionContent,
     TuiDataListHost,
     TuiOptionComponent,
-    tuiSizeBigger,
     TuiSizeL,
     TuiSizeXS,
 } from '@taiga-ui/core';
+import {TUI_MULTI_SELECT_TEXTS} from '@taiga-ui/kit/tokens';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Component({
-    selector: `tui-opt-group[tuiMultiSelectGroup]`,
-    templateUrl: `./multi-select-group.template.html`,
-    styleUrls: [`./multi-select-group.style.less`],
+    selector: 'tui-opt-group[tuiMultiSelectGroup]',
+    templateUrl: './multi-select-group.template.html',
+    styleUrls: ['./multi-select-group.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [tuiAsOptionContent(null)],
 })
 export class TuiMultiSelectGroupComponent<T> {
     @ContentChildren(TuiOptionComponent)
@@ -43,19 +42,17 @@ export class TuiMultiSelectGroupComponent<T> {
 
     @Input()
     @tuiDefaultProp()
-    label = ``;
+    label = '';
 
     constructor(
+        @Inject(TUI_MULTI_SELECT_TEXTS)
+        readonly multiSelectTexts$: TuiInjectionTokenType<typeof TUI_MULTI_SELECT_TEXTS>,
         @Inject(TUI_DATA_LIST_HOST) private readonly host: TuiDataListHost<T>,
         @Inject(NgControl) private readonly control: NgControl,
     ) {}
 
-    get size(): TuiSizeXS | TuiSizeL {
-        return this.options.first?.size || `m`;
-    }
-
-    get checkboxSize(): TuiSizeL {
-        return this.options.first && tuiSizeBigger(this.options.first.size) ? `l` : `m`;
+    get size(): TuiSizeL | TuiSizeXS {
+        return this.options.first?.size || 'm';
     }
 
     @tuiPure
@@ -72,7 +69,7 @@ export class TuiMultiSelectGroupComponent<T> {
 
     @tuiPure
     get value$(): Observable<boolean | null> {
-        return combineLatest(this.items$, this.valueChanges$).pipe(
+        return combineLatest([this.items$, this.valueChanges$]).pipe(
             map(([items, current]) => {
                 let result = false;
 

@@ -555,11 +555,29 @@ export const ROUTES = [
         },
     },
     {
+        path: `components/input-year`,
+        loadChildren: async () =>
+            (await import(`../components/input-year/input-year.module`))
+                .ExampleInputYearModule,
+        data: {
+            title: `InputYear`,
+        },
+    },
+    {
         path: `components/island`,
         loadChildren: async () =>
             (await import(`../components/island/island.module`)).ExampleTuiIslandModule,
         data: {
             title: `Island`,
+        },
+    },
+    {
+        path: `components/items-with-more`,
+        loadChildren: async () =>
+            (await import(`../components/items-with-more/items-with-more.module`))
+                .ExampleTuiItemsWithMoreModule,
+        data: {
+            title: `ItemsWithMore`,
         },
     },
     {
@@ -741,7 +759,7 @@ export const ROUTES = [
         loadChildren: async () =>
             (await import(`../components/range/range.module`)).ExampleTuiRangeModule,
         data: {
-            title: `range`,
+            title: `Range`,
         },
     },
     {
@@ -901,6 +919,14 @@ export const ROUTES = [
         },
     },
     {
+        path: `components/tiles`,
+        loadChildren: async () =>
+            (await import(`../components/tiles/tiles.module`)).ExampleTuiTilesModule,
+        data: {
+            title: `Tiles`,
+        },
+    },
+    {
         path: `components/toggle`,
         loadChildren: async () =>
             (await import(`../components/toggle/toggle.module`)).ExampleTuiToggleModule,
@@ -925,14 +951,110 @@ export const ROUTES = [
             title: `Tree`,
         },
     },
+    // EDITOR
     {
-        path: `components/editor`,
+        path: `editor/getting-started`,
         loadChildren: async () =>
-            (await import(`../components/editor/editor.module`)).ExampleTuiEditorModule,
+            (await import(`../components/editor/getting-started/editor.module`))
+                .ExampleTuiEditorModule,
         data: {
-            title: `Editor`,
+            title: `Editor  — Getting started`,
         },
     },
+    {
+        path: `editor/custom-tool`,
+        loadChildren: async () =>
+            (await import(`../components/editor/custom-tool/editor-custom-tool.module`))
+                .ExampleTuiEditorCustomToolModule,
+        data: {
+            title: `Editor — Custom tool`,
+        },
+    },
+    {
+        path: `editor/resizable-images`,
+        loadChildren: async () =>
+            (
+                await import(
+                    `../components/editor/resizable-images/editor-resizable-images.module`
+                )
+            ).ExampleTuiEditorResizableImagesToolModule,
+        data: {
+            title: `Editor  — Resizable images`,
+        },
+    },
+    {
+        path: `editor/preview-images`,
+        loadChildren: async () =>
+            (
+                await import(
+                    `../components/editor/preview-images/editor-preview-images.module`
+                )
+            ).ExampleTuiEditorPreviewImagesToolModule,
+        data: {
+            title: `Editor  — Preview images`,
+        },
+    },
+    {
+        path: `editor/processing-content`,
+        loadChildren: async () =>
+            (
+                await import(
+                    `../components/editor/processing-content/editor-processing-content.module`
+                )
+            ).ExampleTuiEditorProcessingContentModule,
+        data: {
+            title: `Editor — Processing content`,
+        },
+    },
+    {
+        path: `editor/groups`,
+        loadChildren: async () =>
+            (await import(`../components/editor/groups/editor-groups.module`))
+                .ExampleTuiEditorGroupsModule,
+        data: {
+            title: `Editor — Groups`,
+        },
+    },
+    {
+        path: `editor/uploading-images`,
+        loadChildren: async () =>
+            (
+                await import(
+                    `../components/editor/uploading-images/editor-uploading-images.module`
+                )
+            ).ExampleTuiEditorUploadingImagesModule,
+        data: {
+            title: `Editor — Uploading images`,
+        },
+    },
+    {
+        path: `editor/anchors`,
+        loadChildren: async () =>
+            (await import(`../components/editor/anchors/editor-anchors.module`))
+                .ExampleTuiEditorAnchorsModule,
+        data: {
+            title: `Editor — Anchors`,
+        },
+    },
+    {
+        path: `editor/upload-files`,
+        loadChildren: async () =>
+            (await import(`../components/editor/upload-files/editor-upload-files.module`))
+                .ExampleTuiEditorUploadFilesModule,
+        data: {
+            title: `Editor — Upload files`,
+        },
+    },
+    {
+        path: `editor/markdown`,
+        loadChildren: async () =>
+            (await import(`../components/editor/markdown/editor-markdown.module`))
+                .ExampleTuiEditorMarkdownModule,
+        data: {
+            title: `Editor — Markdown`,
+        },
+    },
+    // FILTER
     {
         path: `components/filter`,
         loadChildren: async () =>
@@ -943,7 +1065,7 @@ export const ROUTES = [
     },
     // CHARTS
     {
-        path: `components/arc-chart`,
+        path: `charts/arc-chart`,
         loadChildren: async () =>
             (await import(`../charts/arc-chart/arc-chart.module`))
                 .ExampleTuiArcChartModule,
@@ -952,7 +1074,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/axes`,
+        path: `charts/axes`,
         loadChildren: async () =>
             (await import(`../charts/axes/axes.module`)).ExampleTuiAxesModule,
         data: {
@@ -960,7 +1082,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/bar`,
+        path: `charts/bar`,
         loadChildren: async () =>
             (await import(`../charts/bar/bar.module`)).ExampleTuiBarModule,
         data: {
@@ -968,7 +1090,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/bar-chart`,
+        path: `charts/bar-chart`,
         loadChildren: async () =>
             (await import(`../charts/bar-chart/bar-chart.module`))
                 .ExampleTuiBarChartModule,
@@ -977,7 +1099,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/bar-set`,
+        path: `charts/bar-set`,
         loadChildren: async () =>
             (await import(`../charts/bar-set/bar-set.module`)).ExampleTuiBarSetModule,
         data: {
@@ -985,7 +1107,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/legend-item`,
+        path: `charts/legend-item`,
         loadChildren: async () =>
             (await import(`../charts/legend-item/legend-item.module`))
                 .ExampleTuiLegendItemModule,
@@ -994,7 +1116,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/line-chart`,
+        path: `charts/line-chart`,
         loadChildren: async () =>
             (await import(`../charts/line-chart/line-chart.module`))
                 .ExampleTuiLineChartModule,
@@ -1003,7 +1125,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/line-days-chart`,
+        path: `charts/line-days-chart`,
         loadChildren: async () =>
             (await import(`../charts/line-days-chart/line-days-chart.module`))
                 .ExampleTuiLineDaysChartModule,
@@ -1012,7 +1134,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/pie-chart`,
+        path: `charts/pie-chart`,
         loadChildren: async () =>
             (await import(`../charts/pie-chart/pie-chart.module`))
                 .ExampleTuiPieChartModule,
@@ -1021,7 +1143,7 @@ export const ROUTES = [
         },
     },
     {
-        path: `components/ring-chart`,
+        path: `charts/ring-chart`,
         loadChildren: async () =>
             (await import(`../charts/ring-chart/ring-chart.module`))
                 .ExampleTuiRingChartModule,
@@ -1231,6 +1353,15 @@ export const ROUTES = [
         },
     },
     {
+        path: `directives/resizer`,
+        loadChildren: async () =>
+            (await import(`../directives/resizer/resizer.module`))
+                .ExampleTuiResizerModule,
+        data: {
+            title: `Resizer`,
+        },
+    },
+    {
         path: `directives/swipe`,
         loadChildren: async () =>
             (await import(`../directives/swipe/swipe.module`)).ExampleTuiSwipeModule,
@@ -1421,6 +1552,15 @@ export const ROUTES = [
         },
     },
     {
+        path: `pipes/is-present`,
+        loadChildren: async () =>
+            (await import(`../pipes/is-present/is-present.module`))
+                .ExampleTuiIsPresentModule,
+        data: {
+            title: `IsPresent`,
+        },
+    },
+    {
         path: `pipes/mapper`,
         loadChildren: async () =>
             (await import(`../pipes/mapper/mapper.module`)).ExampleTuiMapperModule,
@@ -1589,6 +1729,15 @@ export const ROUTES = [
         },
     },
 
+    {
+        path: `stackblitz`,
+        loadChildren: async () =>
+            (await import(`./stackblitz/starter/stackblitz-starter.module`))
+                .StackblitzStarterModule,
+        data: {
+            title: `Stackblitz Starter`,
+        },
+    },
     {path: `**`, redirectTo: ``},
 ];
 

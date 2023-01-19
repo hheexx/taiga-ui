@@ -18,7 +18,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {TuiCodeEditor} from '../../interfaces/code-editor';
-import {TuiDocExample} from '../../interfaces/page';
+import {TUI_EXAMPLE_PRIMARY_FILE_NAME, TuiDocExample} from '../../interfaces/page';
 import {TUI_DOC_CODE_ACTIONS} from '../../tokens/code-actions';
 import {TUI_DOC_CODE_EDITOR} from '../../tokens/code-editor';
 import {TUI_DOC_EXAMPLE_CONTENT_PROCESSOR} from '../../tokens/example-content-processor';
@@ -26,19 +26,19 @@ import {TUI_DOC_EXAMPLE_TEXTS} from '../../tokens/i18n';
 import {tuiRawLoadRecord} from '../../utils/raw-load-record';
 
 @Component({
-    selector: `tui-doc-example`,
-    templateUrl: `./example.template.html`,
-    styleUrls: [`./example.style.less`],
+    selector: 'tui-doc-example',
+    templateUrl: './example.template.html',
+    styleUrls: ['./example.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiDocExampleComponent {
     private readonly rawLoader$$ = new BehaviorSubject<TuiDocExample>({});
 
     @Input()
-    heading: PolymorpheusContent = ``;
+    heading: PolymorpheusContent = '';
 
     @Input()
-    description: PolymorpheusContent = ``;
+    description: PolymorpheusContent = '';
 
     @Input()
     set content(content: TuiDocExample) {
@@ -64,7 +64,7 @@ export class TuiDocExampleComponent {
     readonly loading$ = new Subject<boolean>();
 
     constructor(
-        @Attribute(`id`)
+        @Attribute('id')
         readonly id: string | null,
         @Inject(Clipboard) private readonly clipboard: Clipboard,
         @Inject(TuiAlertService)
@@ -88,8 +88,15 @@ export class TuiDocExampleComponent {
         @Inject(NgLocation) private readonly ngLocation: NgLocation,
     ) {}
 
+    readonly visible = (files: Record<string, string>): boolean =>
+        Boolean(
+            this.codeEditor &&
+                files[TUI_EXAMPLE_PRIMARY_FILE_NAME.TS] &&
+                files[TUI_EXAMPLE_PRIMARY_FILE_NAME.HTML],
+        );
+
     copyExampleLink(): void {
-        const hashPosition = this.location.href.indexOf(`#`);
+        const hashPosition = this.location.href.indexOf('#');
         const currentUrl =
             hashPosition > -1
                 ? this.location.href.slice(0, Math.max(0, hashPosition))
@@ -109,13 +116,13 @@ export class TuiDocExampleComponent {
     edit(files: Record<string, string>): void {
         this.loading$.next(true);
         this.codeEditor
-            ?.edit(this.componentName, this.id || ``, files)
+            ?.edit(this.componentName, this.id || '', files)
             .finally(() => this.loading$.next(false));
     }
 
     private setFragmentWithoutRedirect(id: string | null): void {
         const url = this.router
-            .createUrlTree([], {relativeTo: this.route, fragment: id || ``})
+            .createUrlTree([], {relativeTo: this.route, fragment: id || ''})
             .toString();
 
         this.ngLocation.go(url);

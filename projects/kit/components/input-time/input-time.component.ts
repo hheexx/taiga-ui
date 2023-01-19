@@ -27,7 +27,14 @@ import {
     TuiTimeLike,
     TuiTimeMode,
 } from '@taiga-ui/cdk';
-import {TuiPrimitiveTextfieldComponent, TuiTextMaskOptions} from '@taiga-ui/core';
+import {
+    tuiAsDataListHost,
+    tuiAsOptionContent,
+    TuiDataListHost,
+    TuiPrimitiveTextfieldComponent,
+    TuiTextMaskOptions,
+} from '@taiga-ui/core';
+import {TUI_SELECT_OPTION} from '@taiga-ui/kit/components/select-option';
 import {FIXED_DROPDOWN_CONTROLLER_PROVIDER} from '@taiga-ui/kit/providers';
 import {TUI_TIME_TEXTS} from '@taiga-ui/kit/tokens';
 import {
@@ -40,19 +47,21 @@ import {map} from 'rxjs/operators';
 import {TUI_INPUT_TIME_OPTIONS, TuiInputTimeOptions} from './input-time-options';
 
 @Component({
-    selector: `tui-input-time`,
-    templateUrl: `./input-time.template.html`,
-    styleUrls: [`./input-time.style.less`],
+    selector: 'tui-input-time',
+    templateUrl: './input-time.template.html',
+    styleUrls: ['./input-time.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiInputTimeComponent),
         tuiAsControl(TuiInputTimeComponent),
+        tuiAsDataListHost(TuiInputTimeComponent),
+        tuiAsOptionContent(TUI_SELECT_OPTION),
     ],
     viewProviders: [FIXED_DROPDOWN_CONTROLLER_PROVIDER],
 })
 export class TuiInputTimeComponent
     extends AbstractTuiNullableControl<TuiTime>
-    implements TuiFocusableElementAccessor
+    implements TuiFocusableElementAccessor, TuiDataListHost<TuiTime>
 {
     @ViewChild(TuiPrimitiveTextfieldComponent)
     private readonly textfield?: TuiPrimitiveTextfieldComponent;
@@ -77,6 +86,7 @@ export class TuiInputTimeComponent
     @tuiDefaultProp()
     mode: TuiInputTimeOptions['mode'] = this.options.mode;
 
+    /** @deprecated use `tuiTextfieldPostfix` from {@link TuiTextfieldControllerModule} instead */
     @Input()
     @tuiDefaultProp()
     postfix: TuiInputTimeOptions['postfix'] = this.options.postfix;
@@ -118,7 +128,7 @@ export class TuiInputTimeComponent
     }
 
     get computedSearch(): string {
-        return this.computedValue.length !== this.mode.length ? this.computedValue : ``;
+        return this.computedValue.length !== this.mode.length ? this.computedValue : '';
     }
 
     get innerPseudoFocused(): boolean | null {
@@ -138,7 +148,7 @@ export class TuiInputTimeComponent
     }
 
     get nativeValue(): string {
-        return this.nativeFocusableElement ? this.nativeFocusableElement.value : ``;
+        return this.nativeFocusableElement ? this.nativeFocusableElement.value : '';
     }
 
     set nativeValue(value: string) {
@@ -154,7 +164,7 @@ export class TuiInputTimeComponent
         return this.timeTexts$.pipe(map(texts => texts[mode]));
     }
 
-    @HostListener(`click`)
+    @HostListener('click')
     onClick(): void {
         this.open = !this.open;
     }
@@ -191,8 +201,8 @@ export class TuiInputTimeComponent
         if (
             focused ||
             this.value !== null ||
-            this.nativeValue === `` ||
-            this.mode === `HH:MM`
+            this.nativeValue === '' ||
+            this.mode === 'HH:MM'
         ) {
             return;
         }
@@ -202,7 +212,7 @@ export class TuiInputTimeComponent
         this.updateValue(parsedTime);
 
         setTimeout(() => {
-            if (this.nativeValue.endsWith(`.`) || this.nativeValue.endsWith(`:`)) {
+            if (this.nativeValue.endsWith('.') || this.nativeValue.endsWith(':')) {
                 this.nativeValue = this.nativeValue.slice(0, -1);
             }
         });
@@ -224,7 +234,7 @@ export class TuiInputTimeComponent
         this.processArrow(event, -1);
     }
 
-    onMenuClick(item: TuiTime): void {
+    handleOption(item: TuiTime): void {
         this.focusInput();
         this.updateValue(item);
     }
@@ -235,7 +245,7 @@ export class TuiInputTimeComponent
 
     override writeValue(value: TuiTime | null): void {
         super.writeValue(value);
-        this.nativeValue = value ? this.computedValue : ``;
+        this.nativeValue = value ? this.computedValue : '';
     }
 
     @tuiPure

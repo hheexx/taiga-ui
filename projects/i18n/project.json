@@ -20,10 +20,18 @@
                 }
             ]
         },
-        "publish": {
-            "builder": "@nrwl/workspace:run-commands",
+        "test": {
+            "executor": "nx:run-commands",
+            "outputs": ["coverage/i18n"],
             "options": {
-                "command": "ts-node ./scripts/publish.ts --path ./dist/i18n --dry-run {args.dry-run}"
+                "command": "jest --testMatch '**/projects/i18n/**/*.spec.ts'",
+                "forwardAllArgs": true
+            }
+        },
+        "publish": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "ts-node ./scripts/publish.ts --path ./dist/i18n --dry-run {args.dry-run} --customVersion {args.customVersion} --customTag {args.customTag}"
             }
         }
     }

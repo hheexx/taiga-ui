@@ -7,8 +7,9 @@ import {Observable} from 'rxjs';
 import {distinctUntilChanged, map} from 'rxjs/operators';
 
 @Component({
-    selector: `tui-editor-group-tool`,
-    templateUrl: `./group.component.html`,
+    selector: 'tui-editor-group-tool',
+    templateUrl: './group.component.html',
+    styleUrls: ['../tools-common.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiEditorGroupToolComponent {
@@ -16,7 +17,7 @@ export class TuiEditorGroupToolComponent {
     readonly removeGroupText$ = this.texts$.pipe(map(texts => texts.removeGroup));
 
     readonly disabled$ = this.editor.stateChange$.pipe(
-        map(() => !this.editor.isActive(`group`)),
+        map(() => !this.editor.isActive('group')),
         distinctUntilChanged(),
     );
 

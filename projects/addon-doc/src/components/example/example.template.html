@@ -31,7 +31,7 @@
     *ngIf="processor$ | async as files"
     class="t-example"
 >
-    <ng-container *ngIf="files | tuiDocExampleGetTabs: defaultTab as tabs">
+    <ng-container *ngIf="files | tuiDocExampleGetTabs : defaultTab as tabs">
         <div class="t-tabs-wrapper">
             <tui-tabs-with-more
                 class="t-tabs"
@@ -48,14 +48,15 @@
             </tui-tabs-with-more>
 
             <button
-                *ngIf="codeEditor"
+                *ngIf="files | tuiMapper : visible"
                 tuiButton
                 appearance="flat"
                 size="s"
+                type="button"
                 [showLoader]="!!(loading$ | async)"
                 (click)="edit(files)"
             >
-                Edit on {{ codeEditor.name }}
+                Edit on {{ codeEditor!.name }}
             </button>
         </div>
 

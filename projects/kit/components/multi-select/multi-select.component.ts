@@ -43,13 +43,11 @@ import {
     TuiSizeL,
     TuiSizeM,
     TuiSizeS,
-    TuiSvgService,
     TuiTextfieldController,
 } from '@taiga-ui/core';
 import {TuiStringifiableItem} from '@taiga-ui/kit/classes';
 import {TUI_ARROW_MODE, TuiArrowMode} from '@taiga-ui/kit/components/arrow';
 import {TuiInputTagComponent} from '@taiga-ui/kit/components/input-tag';
-import {iconBlank} from '@taiga-ui/kit/constants';
 import {FIXED_DROPDOWN_CONTROLLER_PROVIDER} from '@taiga-ui/kit/providers';
 import {TUI_ITEMS_HANDLERS, TuiItemsHandlers} from '@taiga-ui/kit/tokens';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
@@ -57,9 +55,9 @@ import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import {TUI_MULTI_SELECT_OPTIONS, TuiMultiSelectOptions} from './multi-select-options';
 
 @Component({
-    selector: `tui-multi-select`,
-    templateUrl: `./multi-select.template.html`,
-    styleUrls: [`./multi-select.style.less`],
+    selector: 'tui-multi-select',
+    templateUrl: './multi-select.template.html',
+    styleUrls: ['./multi-select.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiMultiSelectComponent),
@@ -80,7 +78,7 @@ export class TuiMultiSelectComponent<T>
     private readonly hostedDropdown?: TuiHostedDropdownComponent;
 
     @ViewChild(TuiInputTagComponent)
-    private readonly input?: TuiInputTagComponent;
+    readonly hostControl?: TuiInputTagComponent;
 
     @Input()
     @tuiDefaultProp()
@@ -97,14 +95,14 @@ export class TuiMultiSelectComponent<T>
 
     @Input()
     @tuiDefaultProp()
-    search: string | null = ``;
+    search: string | null = '';
 
     @Input()
     @tuiDefaultProp()
-    placeholder = ``;
+    placeholder = '';
 
     @Input()
-    @HostBinding(`class._editable`)
+    @HostBinding('class._editable')
     @tuiDefaultProp()
     editable = true;
 
@@ -117,13 +115,16 @@ export class TuiMultiSelectComponent<T>
     @tuiDefaultProp()
     valueContent: TuiMultiSelectOptions<T>['valueContent'] = this.options.valueContent;
 
+    @Input()
+    rows = Infinity;
+
     @Output()
     readonly searchChange = new EventEmitter<string | null>();
 
     @ContentChild(TuiDataListDirective, {read: TemplateRef})
     readonly datalist: PolymorpheusContent<
         TuiContextWithImplicit<TuiActiveZoneDirective>
-    > = ``;
+    > = '';
 
     open = false;
 
@@ -133,7 +134,6 @@ export class TuiMultiSelectComponent<T>
         @Inject(NgControl)
         control: NgControl | null,
         @Inject(ChangeDetectorRef) changeDetectorRef: ChangeDetectorRef,
-        @Inject(TuiSvgService) svgService: TuiSvgService,
         @Inject(TUI_ARROW_MODE)
         private readonly arrowMode: TuiArrowMode,
         @Inject(TUI_ITEMS_HANDLERS)
@@ -144,30 +144,25 @@ export class TuiMultiSelectComponent<T>
         readonly controller: TuiTextfieldController,
     ) {
         super(control, changeDetectorRef);
-
-        svgService.define({iconBlank});
     }
 
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     get size(): TuiSizeL | TuiSizeS {
         return this.controller.size;
     }
 
     get arrow(): PolymorpheusContent<
-        TuiContextWithImplicit<TuiSizeS | TuiSizeM | TuiSizeL>
+        TuiContextWithImplicit<TuiSizeL | TuiSizeM | TuiSizeS>
     > {
         return !this.interactive ? this.arrowMode.disabled : this.arrowMode.interactive;
     }
 
     get nativeFocusableElement(): HTMLInputElement | null {
-        return this.input ? this.input.nativeFocusableElement : null;
+        return this.hostControl?.nativeFocusableElement ?? null;
     }
 
     get focused(): boolean {
-        return (
-            (!!this.input && this.input.focused) ||
-            (!!this.hostedDropdown && this.hostedDropdown.focused)
-        );
+        return !!this.hostControl?.focused || !!this.hostedDropdown?.focused;
     }
 
     get computedValue(): readonly T[] {
@@ -176,23 +171,11 @@ export class TuiMultiSelectComponent<T>
 
     // @bad TODO: think of a better way
     get searchOrSpace(): string {
-        return this.computedGroup ? ` ` : this.searchString;
+        return this.computedGroup ? ' ' : this.searchString;
     }
 
     get searchString(): string {
-        return this.search === null ? `` : this.search;
-    }
-
-    /**
-     * Pass empty icon to InputTag (inside this component)
-     * to prevent overflow of arrow icon by many tags
-     */
-    get tagIcon(): string {
-        return this.interactive ? `iconBlank` : ``;
-    }
-
-    get inputHidden(): boolean {
-        return !this.editable && !this.computedGroup;
+        return this.search === null ? '' : this.search;
     }
 
     get computedGroup(): boolean {
@@ -220,7 +203,7 @@ export class TuiMultiSelectComponent<T>
 
     readonly disabledItemHandlerWrapper: TuiMapper<
         TuiBooleanHandler<T>,
-        TuiBooleanHandler<string | TuiStringifiableItem<T>>
+        TuiBooleanHandler<TuiStringifiableItem<T> | string>
     > = handler => stringifiable =>
         tuiIsString(stringifiable) || handler(stringifiable.item);
 
@@ -267,11 +250,6 @@ export class TuiMultiSelectComponent<T>
         }
     }
 
-    onArrowClick(): void {
-        this.hostedDropdown?.updateOpen(!this.open);
-        this.focusInput();
-    }
-
     onInput(value: ReadonlyArray<TuiStringifiableItem<T>>): void {
         this.updateValue(value.map(({item}) => item));
     }
@@ -297,11 +275,5 @@ export class TuiMultiSelectComponent<T>
 
         this.search = search;
         this.searchChange.emit(search);
-    }
-
-    private focusInput(preventScroll: boolean = false): void {
-        if (this.nativeFocusableElement) {
-            this.nativeFocusableElement.focus({preventScroll});
-        }
     }
 }

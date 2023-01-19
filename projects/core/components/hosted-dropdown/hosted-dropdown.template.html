@@ -2,6 +2,7 @@
     *tuiLet="!!(open$ | async) as isOpen"
     #activeZone="tuiActiveZone"
     class="t-wrapper"
+    [tuiDropdownSided]="sided"
     [tuiDropdownHost]="host"
     [tuiDropdown]="dropdown"
     [tuiDropdownManual]="isOpen && canOpen"
@@ -19,7 +20,15 @@
             (keydown.esc)="onKeyDownEsc($event)"
             (keydown)="onKeydown($event)"
         >
-            <ng-container *polymorpheusOutlet="content as text; context: {$implicit: activeZone}">
+            <ng-container
+                *polymorpheusOutlet="
+                    content as text;
+                    context: {
+                        $implicit: activeZone,
+                        close: close
+                    }
+                "
+            >
                 {{ text }}
             </ng-container>
         </div>

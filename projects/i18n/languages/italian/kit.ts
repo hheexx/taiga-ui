@@ -48,9 +48,13 @@ export const TUI_ITALIAN_LANGUAGE_KIT: TuiLanguageKit = {
         defaultLabelMultiple: `o trascinali\u00A0qui`,
         defaultLinkSingle: `Scegliere il file`,
         defaultLinkMultiple: `Scegliere i file`,
-        maxSizeRejectionReason: `Il file supera le dimensioni`,
+        maxSizeRejectionReason: `Il file supera le dimensioni `,
         formatRejectionReason: `Formato file errato`,
         drop: `Trascina il file qui`,
         dropMultiple: `Trascina i file qui`,
+    },
+    multiSelectTexts: {
+        all: `Seleziona tutto`,
+        none: `Seleziona nessuno`,
     },
 };

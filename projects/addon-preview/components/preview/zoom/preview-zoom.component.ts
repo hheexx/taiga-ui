@@ -7,17 +7,17 @@ import {
     Output,
 } from '@angular/core';
 import {TUI_PREVIEW_ZOOM_TEXTS} from '@taiga-ui/addon-preview/tokens';
-import {tuiClamp, tuiDefaultProp} from '@taiga-ui/cdk';
+import {ALWAYS_FALSE_HANDLER, tuiClamp, tuiDefaultProp} from '@taiga-ui/cdk';
 import {TuiLanguagePreview} from '@taiga-ui/i18n';
 import {merge, Observable, of, timer} from 'rxjs';
-import {mapTo, startWith, switchMap} from 'rxjs/operators';
+import {map, startWith, switchMap} from 'rxjs/operators';
 
 const STEP = 0.5;
 
 @Component({
-    selector: `tui-preview-zoom`,
-    templateUrl: `./preview-zoom.template.html`,
-    styleUrls: [`./preview-zoom.style.less`],
+    selector: 'tui-preview-zoom',
+    templateUrl: './preview-zoom.template.html',
+    styleUrls: ['./preview-zoom.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiPreviewZoomComponent {
@@ -40,7 +40,7 @@ export class TuiPreviewZoomComponent {
     readonly reset = new EventEmitter<void>();
 
     readonly hintShow$ = this.valueChange.pipe(
-        switchMap(() => merge(of(true), timer(1000).pipe(mapTo(false)))),
+        switchMap(() => merge(of(true), timer(1000).pipe(map(ALWAYS_FALSE_HANDLER)))),
         startWith(false),
     );
 

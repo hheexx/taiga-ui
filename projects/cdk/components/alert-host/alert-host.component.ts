@@ -13,10 +13,11 @@ import {POLYMORPHEUS_CONTEXT} from '@tinkoff/ng-polymorpheus';
 import {Observable} from 'rxjs';
 
 @Component({
-    selector: `tui-alert-host`,
-    templateUrl: `./alert-host.template.html`,
-    styleUrls: [`./alert-host.style.less`],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'tui-alert-host',
+    templateUrl: './alert-host.template.html',
+    styleUrls: ['./alert-host.style.less'],
+    // So that we do not force OnPush on custom alerts
+    changeDetection: ChangeDetectionStrategy.Default,
     animations: [TUI_PARENT_ANIMATION],
     encapsulation: ViewEncapsulation.None,
 })

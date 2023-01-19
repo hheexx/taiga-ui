@@ -21,7 +21,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/app/@stackblitz/styles/taiga-ui-stackblitz.less", "src/styles.less"]
+            "styles": ["src/styles.less"]
           },
           "configurations": {
             "production": {
@@ -66,10 +66,10 @@
     "declaration": false,
     "downlevelIteration": false,
     "experimentalDecorators": true,
-    "module": "esnext",
+    "module": "es2020",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "esnext",
+    "target": "es2015",
     "typeRoots": ["node_modules/@types"],
     "lib": ["esnext", "dom"]
   },

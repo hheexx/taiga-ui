@@ -30,7 +30,7 @@
         </tui-doc-example>
 
         <tui-doc-example
-            id="tuiDropdownHost"
+            id="tui-dropdown-host"
             i18n-heading
             heading="With custom host"
             [content]="example2"
@@ -46,6 +46,15 @@
         >
             <tui-hosted-dropdown-example-3></tui-hosted-dropdown-example-3>
         </tui-doc-example>
+
+        <tui-doc-example
+            id="complex"
+            i18n-heading
+            heading="Complex example"
+            [content]="example4"
+        >
+            <tui-hosted-dropdown-example-4></tui-hosted-dropdown-example-4>
+        </tui-doc-example>
     </ng-template>
 
     <ng-template pageTab>
@@ -53,11 +62,13 @@
             <tui-hosted-dropdown
                 [content]="template ? dropdown : content"
                 [canOpen]="canOpen"
+                [sided]="sided"
                 [tuiDropdownAlign]="dropdownAlign"
                 [tuiDropdownDirection]="dropdownDirection"
                 [tuiDropdownLimitWidth]="dropdownLimitWidth"
                 [tuiDropdownMinHeight]="dropdownMinHeight"
                 [tuiDropdownMaxHeight]="dropdownMaxHeight"
+                [tuiDropdownOffset]="dropdownOffset"
                 [(open)]="open"
             >
                 <tui-input
@@ -125,6 +136,14 @@
                 [(documentationPropertyValue)]="content"
             >
                 Content inside a dropdown
+            </ng-template>
+            <ng-template
+                documentationPropertyName="sided"
+                documentationPropertyMode="input"
+                documentationPropertyType="boolean"
+                [(documentationPropertyValue)]="sided"
+            >
+                Whether dropdown should appear on the side or not
             </ng-template>
         </tui-doc-documentation>
         <dropdown-documentation></dropdown-documentation>

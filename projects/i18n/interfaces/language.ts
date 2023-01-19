@@ -84,6 +84,10 @@ export interface TuiLanguageKit {
         drop: string;
         dropMultiple: string;
     };
+    multiSelectTexts: {
+        all: string;
+        none: string;
+    };
 }
 
 export interface TuiLanguageCommerce {
@@ -148,13 +152,19 @@ export interface TuiLanguageEditor {
         subscript: string;
         insertTable: string;
         insertGroup: string;
+        insertAnchor: string;
         removeGroup: string;
+        hiliteGroup: string;
         mergeCells: string;
         splitCells: string;
         rowsColumnsManaging: string;
         cellColor: string;
         setDetails: string;
         removeDetails: string;
+    };
+    editorEditLink: {
+        urlExample: string;
+        anchorExample: string;
     };
     editorTableCommands: [[string, string], [string, string], [string, string]];
     editorCodeOptions: [string, string];

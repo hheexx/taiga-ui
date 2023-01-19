@@ -17,23 +17,25 @@ import {TuiRowDirective} from '../directives/row.directive';
 import {TuiTableDirective} from '../directives/table.directive';
 import {TuiTableSortPipe} from '../pipes/table-sort.pipe';
 import {TUI_TABLE_PROVIDER} from '../providers/table.provider';
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiTrComponent} from '../tr/tr.component';
 
 @Component({
-    selector: `tbody[tuiTbody]`,
-    templateUrl: `./tbody.template.html`,
-    styleUrls: [`./tbody.style.less`],
+    selector: 'tbody[tuiTbody]',
+    templateUrl: './tbody.template.html',
+    styleUrls: ['./tbody.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: TUI_TABLE_PROVIDER,
 })
-export class TuiTbodyComponent<T extends Record<keyof T, any>> {
+export class TuiTbodyComponent<T extends Partial<Record<keyof T, any>>> {
     @Input()
     @tuiDefaultProp()
     data: readonly T[] = [];
 
     @Input()
     @tuiDefaultProp()
-    heading: PolymorpheusContent = ``;
+    heading: PolymorpheusContent = '';
 
     @Input()
     @tuiDefaultProp()

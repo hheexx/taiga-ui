@@ -9,11 +9,12 @@ import {
     TuiRootModule,
     TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
-import {TuiDataListWrapperModule} from '@taiga-ui/kit/components';
+import {
+    TuiDataListWrapperModule,
+    TuiSelectComponent,
+    TuiSelectModule,
+} from '@taiga-ui/kit';
 import {configureTestSuite, TuiNativeInputPO, TuiPageObject} from '@taiga-ui/testing';
-
-import {TuiSelectComponent} from '../select.component';
-import {TuiSelectModule} from '../select.module';
 
 class Beast {
     constructor(readonly species: string, readonly trait: string, readonly id: string) {}
@@ -52,7 +53,7 @@ describe(`Select`, () => {
     })
     class TestComponent {
         @ViewChild(TuiSelectComponent, {static: true})
-        component!: TuiSelectComponent<string | Beast>;
+        component!: TuiSelectComponent<Beast | string>;
 
         items = ITEMS;
         control = new FormControl();

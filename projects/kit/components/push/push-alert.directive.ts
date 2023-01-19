@@ -4,6 +4,7 @@ import {
     forwardRef,
     Inject,
     Input,
+    Self,
     TemplateRef,
 } from '@angular/core';
 import {TuiDestroyService} from '@taiga-ui/cdk';
@@ -11,10 +12,12 @@ import {PolymorpheusTemplate} from '@tinkoff/ng-polymorpheus';
 import {EMPTY, Observable, Subject} from 'rxjs';
 import {switchMap, takeUntil} from 'rxjs/operators';
 
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiPushService} from './push.service';
 
 @Directive({
-    selector: `[tuiPush]`,
+    selector: '[tuiPush]',
     providers: [TuiDestroyService],
 })
 export class TuiPushAlertDirective extends PolymorpheusTemplate<any> {
@@ -28,7 +31,7 @@ export class TuiPushAlertDirective extends PolymorpheusTemplate<any> {
     constructor(
         @Inject(TemplateRef) template: TemplateRef<any>,
         @Inject(ChangeDetectorRef) changeDetectorRef: ChangeDetectorRef,
-        @Inject(TuiDestroyService) destroy$: Observable<unknown>,
+        @Self() @Inject(TuiDestroyService) destroy$: Observable<unknown>,
         @Inject(forwardRef(() => TuiPushService)) push: TuiPushService,
     ) {
         super(template, changeDetectorRef);

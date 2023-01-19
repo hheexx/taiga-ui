@@ -25,6 +25,8 @@ import {TuiOptionRole, TuiSizeL, TuiSizeXS} from '@taiga-ui/core/types';
 import {shouldCall} from '@tinkoff/ng-event-plugins';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiDataListComponent} from '../data-list.component';
 
 function shouldFocus({currentTarget}: TuiEventWith<MouseEvent, HTMLElement>): boolean {
@@ -33,26 +35,27 @@ function shouldFocus({currentTarget}: TuiEventWith<MouseEvent, HTMLElement>): bo
 
 // TODO: Consider all use cases for aria roles
 @Component({
-    selector: `button[tuiOption], a[tuiOption]`,
-    templateUrl: `./option.template.html`,
-    styleUrls: [`./option.style.less`],
+    selector: 'button[tuiOption], a[tuiOption]',
+    templateUrl: './option.template.html',
+    styleUrls: ['./option.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
-        tabIndex: `-1`,
-        type: `button`,
-        '[attr.disabled]': `disabled || null`,
+        tabIndex: '-1',
+        type: 'button',
+        '[attr.disabled]': 'disabled || null',
     },
 })
 export class TuiOptionComponent<T = unknown> implements OnDestroy {
+    /** @deprecated use size on {@link TuiDataListComponent} instead */
     @Input()
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     @tuiDefaultProp()
-    size: TuiSizeXS | TuiSizeL = `m`;
+    size: TuiSizeL | TuiSizeXS | null = null;
 
     @Input()
-    @HostBinding(`attr.role`)
+    @HostBinding('attr.role')
     @tuiDefaultProp()
-    role: TuiOptionRole = `option`;
+    role: TuiOptionRole = 'option';
 
     @Input()
     @tuiDefaultProp()
@@ -79,12 +82,12 @@ export class TuiOptionComponent<T = unknown> implements OnDestroy {
         readonly dropdown: TuiDropdownDirective | null,
     ) {}
 
-    @HostBinding(`class._with-dropdown`)
+    @HostBinding('class._with-dropdown')
     get active(): boolean {
         return !!this.dropdown && !!this.dropdown.dropdownBoxRef;
     }
 
-    @HostListener(`click`)
+    @HostListener('click')
     onClick(): void {
         if (this.host && this.value !== undefined) {
             this.host.handleOption(this.value);
@@ -93,8 +96,7 @@ export class TuiOptionComponent<T = unknown> implements OnDestroy {
 
     // @bad TODO: Consider aria-activedescendant for proper accessibility implementation
     @shouldCall(shouldFocus)
-    @HostListener(`mousemove.init`, [`$event`])
-    @HostListener(`mousemove.silent`, [`$event`])
+    @HostListener('mousemove.silent', ['$event'])
     onMouseMove({currentTarget}: TuiEventWith<MouseEvent, HTMLElement>): void {
         currentTarget.focus({preventScroll: true});
     }

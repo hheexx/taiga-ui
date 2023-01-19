@@ -11,13 +11,13 @@
         <th class="t-th">{{ type }}</th>
         <th
             *ngIf="showValues && !isAPI"
-            class="t-th t-cell t-cell_value"
+            class="t-th t-cell t-th_value"
         >
             {{ texts[3] }}
         </th>
     </tr>
     <tr
-        *ngFor="let propertyConnector of propertiesConnectors"
+        *ngFor="let propertyConnector of $any(propertiesConnectors) | tuiFilter : matcher : excludedProperties"
         class="t-row"
         [class.t-deprecated]="propertyConnector.documentationPropertyDeprecated"
     >
@@ -26,9 +26,9 @@
                 automation-id="tui-documentation__property-name"
                 class="t-property"
             >
-                {{ stripOptional(propertyConnector.attrName) }}
+                {{ propertyConnector.attrName | tuiStripOptionalPipe }}
                 <tui-badge
-                    *ngIf="isOptional(propertyConnector.attrName)"
+                    *ngIf="propertyConnector.attrName | tuiIsOptionalPipe"
                     size="s"
                     value="Optional"
                 ></tui-badge>
@@ -45,7 +45,7 @@
             <span class="type">
                 {{ propertyConnector.documentationPropertyType }}
                 <tui-tooltip
-                    *ngIf="showContentTooltip(propertyConnector.documentationPropertyType)"
+                    *ngIf="propertyConnector.documentationPropertyType | tuiShowContentTooltip"
                     [describeId]="propertyConnector.attrName"
                     [content]="content"
                 >
@@ -55,6 +55,7 @@
                             tuiLink
                             tuiMode="onDark"
                             target="_blank"
+                            rel="noreferrer"
                             href="https://github.com/tinkoff/ng-polymorpheus"
                         >
                             <code>ng-polymorpheus</code>
@@ -65,14 +66,14 @@
         </td>
         <td
             *ngIf="showValues"
-            class="t-cell"
+            class="t-cell t-cell_value"
         >
             <ng-container *ngIf="propertyConnector.shouldShowValues; else elseEmitter">
                 <tui-select
                     *ngIf="propertyConnector.hasItems; else noItems"
                     tuiTextfieldSize="m"
                     tuiDropdownLimitWidth="min"
-                    [tuiTextfieldCleaner]="showCleaner(propertyConnector.documentationPropertyType)"
+                    [tuiTextfieldCleaner]="propertyConnector.documentationPropertyType | tuiShowCleanerPipe"
                     [tuiTextfieldLabelOutside]="true"
                     [nativeId]="propertyConnector.attrName"
                     [valueContent]="selectContent"
@@ -90,7 +91,7 @@
                     #selectContent
                     let-data
                 >
-                    <code>{{ inspectAny(data) }}</code>
+                    <code>{{ data | tuiInspectAny }}</code>
                 </ng-template>
 
                 <ng-template #noItems>
@@ -122,8 +123,8 @@
                                 tuiTextfieldSize="m"
                                 [attr.id]="propertyConnector.attrName"
                                 [tuiTextfieldLabelOutside]="true"
-                                [tuiInputOpacity]="getOpacity(propertyConnector.documentationPropertyValue)"
-                                [value]="getColor(propertyConnector.documentationPropertyValue)"
+                                [tuiInputOpacity]="propertyConnector.documentationPropertyValue | tuiGetOpacity"
+                                [value]="propertyConnector.documentationPropertyValue | tuiGetColorPipe"
                                 (valueChange)="onColorChange(propertyConnector, $event)"
                             >
                                 <input
@@ -134,7 +135,7 @@
                             <tui-input-count
                                 tuiTextfieldSize="m"
                                 [max]="100"
-                                [ngModel]="getOpacity(propertyConnector.documentationPropertyValue)"
+                                [ngModel]="propertyConnector.documentationPropertyValue | tuiGetOpacity"
                                 (ngModelChange)="onOpacityChange(propertyConnector, $event)"
                             >
                                 Opacity
@@ -152,7 +153,9 @@
 
                         <ng-container *ngSwitchCase="'PolymorpheusContent'">
                             <tui-primitive-textfield
-                                *ngIf="isPrimitivePolymorpheusContent(propertyConnector.documentationPropertyValue)"
+                                *ngIf="
+                                    propertyConnector.documentationPropertyValue | tuiIsPrimitivePolymorpheusContentPipe
+                                "
                                 tuiTextfieldSize="m"
                                 [nativeId]="propertyConnector.attrName"
                                 [tuiTextfieldLabelOutside]="true"

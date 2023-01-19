@@ -11,13 +11,13 @@
         automation-id="tui-input-date-range__textfield"
         tuiValueAccessor
         class="t-textfield"
-        [tuiTextfieldIcon]="computedMobile ? mobileIconContent : iconContent"
+        [tuiTextfieldIcon]="calendarIcon && iconContent"
+        [tuiTextfieldFiller]="getComputedRangeFiller(dateFiller || '')"
         [pseudoFocus]="innerPseudoFocused"
         [pseudoHover]="pseudoHover"
         [pseudoActive]="pseudoActive"
         [invalid]="computedInvalid"
         [nativeId]="nativeId"
-        [filler]="getComputedRangeFiller(dateFiller || '')"
         [readOnly]="readOnly"
         [disabled]="computedDisabled"
         [textMask]="computedMask"
@@ -31,19 +31,13 @@
         ></ng-content>
     </tui-primitive-textfield>
 
-    <ng-template #mobileIconContent>
-        <tui-svg
-            automation-id="tui-input-date-range__icon"
-            [class.t-icon]="!computedDisabled"
-            [src]="calendarIcon"
-            (click)="onMobileClick()"
-        ></tui-svg>
-    </ng-template>
-
     <ng-template #iconContent>
         <tui-svg
+            *polymorpheusOutlet="calendarIcon as src; context: {$implicit: size}"
+            automation-id="tui-input-date-range__icon"
             [class.t-icon]="!computedDisabled"
-            [src]="calendarIcon"
+            [src]="src"
+            (click)="onIconClick()"
         ></tui-svg>
     </ng-template>
 

@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {configureTestSuite} from '@taiga-ui/testing';
@@ -13,15 +13,22 @@ describe(`InputCard`, () => {
                 [formControl]="control"
                 (binChange)="onBinChange($event)"
             ></tui-input-card>
+
+            <ng-template #customIconTemplateRef>
+                <tui-svg src="tuiIconMastercard"></tui-svg>
+            </ng-template>
         `,
     })
     class TestComponent {
         @ViewChild(TuiInputCardComponent, {static: true})
         component!: TuiInputCardComponent;
 
+        @ViewChild(`customIconTemplateRef`, {read: TemplateRef})
+        customIconTemplateRef!: TemplateRef<any>;
+
         control = new FormControl(``);
 
-        onBinChange = jasmine.createSpy(`bin`);
+        onBinChange = jest.fn();
     }
 
     let fixture: ComponentFixture<TestComponent>;
@@ -55,7 +62,7 @@ describe(`InputCard`, () => {
 
         it(`The value has changed, the first 6 characters are unchanged`, () => {
             testComponent.control.setValue(`123456789`);
-            testComponent.onBinChange.calls.reset();
+            testComponent.onBinChange.mockClear();
             testComponent.control.setValue(`123456987`);
 
             expect(testComponent.onBinChange).not.toHaveBeenCalled();
@@ -63,7 +70,7 @@ describe(`InputCard`, () => {
 
         it(`The value has changed, the first 6 characters have changed`, () => {
             testComponent.control.setValue(`123456789`);
-            testComponent.onBinChange.calls.reset();
+            testComponent.onBinChange.mockClear();
             testComponent.control.setValue(`654321789`);
 
             expect(testComponent.onBinChange).toHaveBeenCalledWith(`654321`);
@@ -71,7 +78,7 @@ describe(`InputCard`, () => {
 
         it(`The value has changed to less than 6 characters`, () => {
             testComponent.control.setValue(`123456789`);
-            testComponent.onBinChange.calls.reset();
+            testComponent.onBinChange.mockClear();
             testComponent.control.setValue(`123`);
 
             expect(testComponent.onBinChange).toHaveBeenCalledWith(null);
@@ -140,6 +147,31 @@ describe(`InputCard`, () => {
         });
     });
 
+    describe(`customIconSource`, () => {
+        beforeEach(() => testComponent.control.setValue(`4111 1111 1111 1111`));
+
+        it(`input-card component has a default icon`, () => {
+            expect(testComponent.control.valid).toEqual(true);
+            expect(testComponent.component.icon).toEqual(`tuiIconVisa`);
+            expect(testComponent.control.value).toEqual(`4111 1111 1111 1111`);
+        });
+
+        it(`input-card component has a tuiIconElectron icon`, () => {
+            testComponent.component.cardSrc = `tuiIconElectron`;
+            expect(testComponent.control.valid).toEqual(true);
+            expect(testComponent.component.icon).toEqual(`tuiIconElectron`);
+            expect(testComponent.control.value).toEqual(`4111 1111 1111 1111`);
+        });
+
+        it(`input-card component has an icon source as TemplateRef`, () => {
+            testComponent.component.cardSrc =
+                fixture.componentInstance.customIconTemplateRef;
+            expect(testComponent.control.valid).toEqual(true);
+            expect(testComponent.component.icon).toBeInstanceOf(TemplateRef);
+            expect(testComponent.control.value).toEqual(`4111 1111 1111 1111`);
+        });
+    });
+
     async function testFormat(value: string, formatted: string): Promise<void> {
         testComponent.control.setValue(value);
         fixture.detectChanges();
@@ -155,6 +187,6 @@ describe(`InputCard`, () => {
     }
 
     function getValue(): string {
-        return testComponent.component.nativeFocusableElement!.value;
+        return testComponent.component.nativeFocusableElement?.value || ``;
     }
 });

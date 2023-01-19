@@ -1,23 +1,25 @@
 import {DOCUMENT} from '@angular/common';
-import {Directive, ElementRef, HostListener, Inject, Input} from '@angular/core';
+import {Directive, ElementRef, HostListener, Inject, Input, Self} from '@angular/core';
 import {
+    ALWAYS_FALSE_HANDLER,
+    ALWAYS_TRUE_HANDLER,
     tuiCoerceBooleanProperty,
     tuiDefaultProp,
     TuiDestroyService,
     tuiTypedFromEvent,
 } from '@taiga-ui/cdk';
 import {combineLatest, merge, Observable} from 'rxjs';
-import {filter, mapTo, takeUntil, tap} from 'rxjs/operators';
+import {filter, map, takeUntil, tap} from 'rxjs/operators';
 
 const SLIDER_INTERACTION_KEYS = new Set([
-    `ArrowLeft`,
-    `ArrowRight`,
-    `ArrowUp`,
-    `ArrowDown`,
-    `Home`,
-    `End`,
-    `PageUp`,
-    `PageDown`,
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowUp',
+    'ArrowDown',
+    'Home',
+    'End',
+    'PageUp',
+    'PageDown',
 ]);
 
 /**
@@ -25,36 +27,37 @@ const SLIDER_INTERACTION_KEYS = new Set([
  * This directive imitates this native behaviour.
  */
 @Directive({
-    selector: `input[tuiSlider][readonly]`,
+    selector: 'input[tuiSlider][readonly]',
     providers: [TuiDestroyService],
 })
 export class TuiSliderReadonlyDirective {
     @Input()
     @tuiDefaultProp()
-    readonly: string | boolean = true;
+    readonly: boolean | string = true;
 
     constructor(
         @Inject(ElementRef) elementRef: ElementRef<HTMLInputElement>,
         @Inject(DOCUMENT) documentRef: Document,
+        @Self()
         @Inject(TuiDestroyService)
         destroy$: Observable<unknown>,
     ) {
-        const touchStart$ = tuiTypedFromEvent(elementRef.nativeElement, `touchstart`, {
+        const touchStart$ = tuiTypedFromEvent(elementRef.nativeElement, 'touchstart', {
             passive: false,
         });
-        const touchMove$ = tuiTypedFromEvent(documentRef, `touchmove`, {
+        const touchMove$ = tuiTypedFromEvent(documentRef, 'touchmove', {
             passive: false,
         });
-        const touchEnd$ = tuiTypedFromEvent(documentRef, `touchend`, {
+        const touchEnd$ = tuiTypedFromEvent(documentRef, 'touchend', {
             passive: true,
         });
 
         const shouldPreventMove$ = merge(
             touchStart$.pipe(
                 tap(e => this.preventEvent(e)),
-                mapTo(true),
+                map(ALWAYS_TRUE_HANDLER),
             ),
-            touchEnd$.pipe(mapTo(false)),
+            touchEnd$.pipe(map(ALWAYS_FALSE_HANDLER)),
         );
 
         /**
@@ -69,14 +72,14 @@ export class TuiSliderReadonlyDirective {
             .subscribe(([moveEvent]) => this.preventEvent(moveEvent));
     }
 
-    @HostListener(`mousedown`, [`$event`])
+    @HostListener('mousedown', ['$event'])
     preventEvent(event: Event): void {
         if (event.cancelable && tuiCoerceBooleanProperty(this.readonly)) {
             event.preventDefault();
         }
     }
 
-    @HostListener(`keydown`, [`$event`])
+    @HostListener('keydown', ['$event'])
     preventKeyboardInteraction(event: KeyboardEvent): void {
         if (SLIDER_INTERACTION_KEYS.has(event.key)) {
             this.preventEvent(event);

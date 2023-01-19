@@ -9,7 +9,7 @@
     <tui-primitive-textfield
         tuiValueAccessor
         class="t-textfield"
-        [filler]="(getFiller$(mode) | async) || ''"
+        [tuiTextfieldFiller]="(getFiller$(mode) | async) || ''"
         [nativeId]="nativeId"
         [pseudoFocus]="innerPseudoFocused"
         [pseudoHover]="pseudoHover"
@@ -34,14 +34,16 @@
     </tui-primitive-textfield>
 </tui-hosted-dropdown>
 <ng-template #dropdownContent>
-    <tui-data-list automation-id="tui-input-time__dropdown">
+    <tui-data-list
+        automation-id="tui-input-time__dropdown"
+        [size]="itemSize"
+    >
         <button
             *ngFor="let item of filtered"
             tuiOption
             automation-id="tui-input-time__item"
-            [size]="itemSize"
             [disabled]="disabledItemHandler(item)"
-            (click)="onMenuClick(item)"
+            [value]="item"
         >
             {{ item }}
         </button>

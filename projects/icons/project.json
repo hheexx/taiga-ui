@@ -6,13 +6,13 @@
     "implicitDependencies": ["!testing"],
     "architect": {
         "preprocess": {
-            "builder": "@nrwl/workspace:run-commands",
+            "executor": "nx:run-commands",
             "options": {
                 "command": "ts-node ./scripts/preprocess-icons.ts"
             }
         },
         "prebuild": {
-            "builder": "@nrwl/workspace:run-commands",
+            "executor": "nx:run-commands",
             "options": {
                 "command": "ts-node ./scripts/compile-icons.ts"
             },
@@ -39,10 +39,18 @@
                 }
             ]
         },
-        "publish": {
-            "builder": "@nrwl/workspace:run-commands",
+        "test": {
+            "executor": "nx:run-commands",
+            "outputs": ["coverage/icons"],
             "options": {
-                "command": "ts-node ./scripts/publish.ts --path ./dist/icons --dry-run {args.dry-run}"
+                "command": "jest --testMatch '**/projects/icons/**/*.spec.ts'",
+                "forwardAllArgs": true
+            }
+        },
+        "publish": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "ts-node ./scripts/publish.ts --path ./dist/icons --dry-run {args.dry-run} --customVersion {args.customVersion} --customTag {args.customTag}"
             }
         }
     }

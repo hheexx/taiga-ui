@@ -1,7 +1,12 @@
-import {LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {inject, Provider} from '@angular/core';
+import {
+    APP_BASE_HREF,
+    DOCUMENT,
+    isPlatformBrowser,
+    LocationStrategy,
+    PathLocationStrategy,
+} from '@angular/common';
+import {inject, PLATFORM_ID, Provider} from '@angular/core';
 import {Title} from '@angular/platform-browser';
-import {WINDOW} from '@ng-web-apis/common';
 import {
     TUI_DOC_CODE_EDITOR,
     TUI_DOC_DEFAULT_TABS,
@@ -18,7 +23,6 @@ import {
     TUI_DIALOG_CLOSES_ON_BACK,
     TUI_IS_CYPRESS,
     TUI_TAKE_ONLY_TRUSTED_EVENTS,
-    tuiIsInsideIframe,
 } from '@taiga-ui/cdk';
 import {TUI_ANIMATIONS_DURATION, TUI_SANITIZER} from '@taiga-ui/core';
 import {TuiLanguageName, tuiLanguageSwitcher} from '@taiga-ui/i18n';
@@ -34,24 +38,32 @@ import {pages} from './pages';
 import {TuiStackblitzService} from './stackblitz/stackblitz.service';
 import {exampleContentProcessor} from './utils';
 
-const TITLE_PREFIX = `Taiga UI: `;
-
-export const HIGHLIGHT_OPTIONS_VALUE = {
-    coreLibraryLoader: async () => import(`highlight.js/lib/core`),
-    lineNumbersLoader: async () => import(`highlightjs-line-numbers.js`), // Optional, only if you want the line numbers
-    languages: {
-        typescript: async () => import(`highlight.js/lib/languages/typescript`),
-        less: async () => import(`highlight.js/lib/languages/less`),
-        xml: async () => import(`highlight.js/lib/languages/xml`),
-    },
-};
-
 export const APP_PROVIDERS: Provider[] = [
     Title,
     PROMPT_PROVIDER,
     {
+        provide: APP_BASE_HREF,
+        // @note: By default, on webcontainer.io will not be provided APP_BASE_HREF, we use fallback
+        useFactory: () => inject(DOCUMENT).getElementsByTagName(`base`)?.[0]?.href || `/`,
+    },
+    {
         provide: HIGHLIGHT_OPTIONS,
-        useValue: HIGHLIGHT_OPTIONS_VALUE,
+        useFactory: () => {
+            const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+            return {
+                coreLibraryLoader: async () => import(`highlight.js/lib/core`),
+                lineNumbersLoader: async () =>
+                    // SSR ReferenceError: window is not defined
+                    isBrowser ? import(`highlightjs-line-numbers.js`) : Promise.resolve(),
+                languages: {
+                    typescript: async () =>
+                        import(`highlight.js/lib/languages/typescript`),
+                    less: async () => import(`highlight.js/lib/languages/less`),
+                    xml: async () => import(`highlight.js/lib/languages/xml`),
+                },
+            };
+        },
     },
     {
         provide: TUI_SANITIZER,
@@ -81,7 +93,7 @@ export const APP_PROVIDERS: Provider[] = [
     },
     {
         provide: TUI_DOC_TITLE,
-        useValue: TITLE_PREFIX,
+        useValue: `Taiga UI: `,
     },
     {
         provide: TUI_DOC_PAGES,
@@ -121,7 +133,9 @@ export const APP_PROVIDERS: Provider[] = [
     },
     {
         provide: TUI_DIALOG_CLOSES_ON_BACK,
-        useFactory: () => of(!tuiIsInsideIframe(inject(WINDOW))), // for cypress tests
+        // TODO: change it back after solving https://github.com/Tinkoff/taiga-ui/issues/3270
+        // useFactory: () => of(!tuiIsInsideIframe(inject(WINDOW))), // for cypress tests
+        useFactory: () => of(inject(TUI_IS_CYPRESS)),
     },
     tuiLanguageSwitcher(
         async (language: TuiLanguageName): Promise<unknown> =>

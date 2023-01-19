@@ -24,8 +24,11 @@ import {
     tuiRound,
 } from '@taiga-ui/cdk';
 import {
+    TEXTFIELD_CONTROLLER_PROVIDER,
+    TUI_TEXTFIELD_WATCHED_CONTROLLER,
     TuiDecimal,
     tuiGetFractionPartPadded,
+    TuiTextfieldController,
     TuiWithOptionalMinMax,
 } from '@taiga-ui/core';
 import {TuiInputNumberComponent} from '@taiga-ui/kit/components/input-number';
@@ -38,14 +41,15 @@ import {TuiKeySteps} from '@taiga-ui/kit/types';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
 @Component({
-    selector: `tui-input-slider`,
-    templateUrl: `./input-slider.template.html`,
-    styleUrls: [`./input-slider.style.less`],
+    selector: 'tui-input-slider',
+    templateUrl: './input-slider.template.html',
+    styleUrls: ['./input-slider.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiInputSliderComponent),
         tuiAsControl(TuiInputSliderComponent),
-        tuiSliderOptionsProvider({trackColor: `transparent`}),
+        tuiSliderOptionsProvider({trackColor: 'transparent'}),
+        TEXTFIELD_CONTROLLER_PROVIDER,
     ],
 })
 export class TuiInputSliderComponent
@@ -67,20 +71,20 @@ export class TuiInputSliderComponent
     max = 100;
 
     @Input()
-    @tuiDefaultProp(q => q > 0, `Quantum must be positive`)
+    @tuiDefaultProp(q => q > 0, 'Quantum must be positive')
     quantum = 1;
 
     @Input()
     @tuiDefaultProp(
         s => s >= 0 && Number.isInteger(s),
-        `Steps must be non-negative integer`,
+        'Steps must be non-negative integer',
     )
     steps = 0;
 
     @Input()
     @tuiDefaultProp(
         s => s > 0 && Number.isInteger(s),
-        `Segments must be positive integer`,
+        'Segments must be positive integer',
     )
     segments = 1;
 
@@ -90,15 +94,17 @@ export class TuiInputSliderComponent
 
     @Input()
     @tuiDefaultProp()
-    valueContent: PolymorpheusContent<TuiContextWithImplicit<number>> = ``;
+    valueContent: PolymorpheusContent<TuiContextWithImplicit<number>> = '';
 
-    @Input()
+    /** @deprecated use `tuiTextfieldPrefix` from {@link TuiTextfieldControllerModule} instead */
+    @Input('prefix')
     @tuiDefaultProp()
-    prefix = ``;
+    textfieldPrefix = '';
 
-    @Input()
+    /** @deprecated use `tuiTextfieldPostfix` from {@link TuiTextfieldControllerModule} instead */
+    @Input('postfix')
     @tuiDefaultProp()
-    postfix = ``;
+    textfieldPostfix = '';
 
     constructor(
         @Optional()
@@ -106,8 +112,18 @@ export class TuiInputSliderComponent
         @Inject(NgControl)
         control: NgControl | null,
         @Inject(ChangeDetectorRef) changeDetectorRef: ChangeDetectorRef,
+        @Inject(TUI_TEXTFIELD_WATCHED_CONTROLLER)
+        readonly controller: TuiTextfieldController,
     ) {
         super(control, changeDetectorRef);
+    }
+
+    get prefix(): string {
+        return this.textfieldPrefix || this.controller.prefix;
+    }
+
+    get postfix(): string {
+        return this.textfieldPostfix || this.controller.postfix;
     }
 
     get nativeFocusableElement(): TuiNativeFocusableElement | null {
@@ -132,7 +148,7 @@ export class TuiInputSliderComponent
     }
 
     get decimal(): TuiDecimal {
-        return this.precision ? `not-zero` : `never`;
+        return this.precision ? 'not-zero' : 'never';
     }
 
     get showValueContent(): boolean {
@@ -195,7 +211,7 @@ export class TuiInputSliderComponent
     }
 
     private get textInputValue(): string {
-        return this.inputNumberRef?.nativeValue || ``;
+        return this.inputNumberRef?.nativeValue || '';
     }
 
     protected getFallbackValue(): number {

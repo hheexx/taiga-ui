@@ -1,15 +1,18 @@
 import {SchematicContext} from '@angular-devkit/schematics';
 import {getImports} from 'ng-morph';
 
-import {MIGRATION_WARNINGS, MigrationWarning} from '../constants/warnings';
 import {ALL_TS_FILES} from '../../constants';
+import {MigrationWarning} from '../interfaces/migration-warning';
 
-export function showWarnings(context: SchematicContext): void {
-    MIGRATION_WARNINGS.forEach(warning => showWarning(warning, context));
+export function showWarnings(
+    context: SchematicContext,
+    warnings: readonly MigrationWarning[],
+): void {
+    warnings.forEach(warning => showWarning(warning, context));
 }
 
 function showWarning(
-    {name, message, moduleSpecifier = '**/**'}: MigrationWarning,
+    {name, message, moduleSpecifier = `**/**`}: MigrationWarning,
     {logger}: SchematicContext,
 ): void {
     const references = getImports(ALL_TS_FILES, {

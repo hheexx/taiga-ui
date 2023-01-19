@@ -4,10 +4,8 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ALWAYS_FALSE_HANDLER, TuiBooleanHandler, TuiHandler} from '@taiga-ui/cdk';
 import {TuiSizeS} from '@taiga-ui/core';
+import {TuiFilterComponent, TuiFilterModule} from '@taiga-ui/kit';
 import {configureTestSuite, TuiPageObject} from '@taiga-ui/testing';
-
-import {TuiFilterComponent} from '../filter.component';
-import {TuiFilterModule} from '../filter.module';
 
 const BADGE_VALUE = 10;
 
@@ -49,7 +47,7 @@ describe(`Filter`, () => {
 
         control = new FormControl([]);
 
-        items: readonly string[] | readonly ItemWithBadge[] = ARR_STRING;
+        items: readonly ItemWithBadge[] | readonly string[] = ARR_STRING;
 
         size: TuiSizeS = `m`;
 
@@ -58,7 +56,7 @@ describe(`Filter`, () => {
 
     let fixture: ComponentFixture<TestComponent>;
     let testComponent: TestComponent;
-    let component: TuiFilterComponent<string | ItemWithBadge>;
+    let component: TuiFilterComponent<ItemWithBadge | string>;
     let pageObject: TuiPageObject<TestComponent>;
     const testContext = {
         get prefix() {
@@ -124,7 +122,7 @@ describe(`Filter`, () => {
             testComponent.items = ARR_OBJECT;
             fixture.detectChanges();
             expect(getContent().nativeElement.textContent.trim()).toBe(
-                `Focused Zone \n10`,
+                `Focused Zone  10`,
             );
         });
     });

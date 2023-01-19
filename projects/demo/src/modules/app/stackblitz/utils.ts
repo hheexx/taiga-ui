@@ -4,12 +4,10 @@ import {TsFileComponentParser, TsFileModuleParser, TsFileParser} from '../classe
 import {isLess, isPrimaryComponentFile, isTS} from '../utils';
 
 export const prepareLess = (content: string): string => {
-    return content
-        .replace(
-            `~@taiga-ui/core/styles/taiga-ui-local`,
-            `@stackblitz/styles/taiga-ui-stackblitz.less`,
-        )
-        .replace(/@import.+taiga-ui-local';/g, ``);
+    return content.replace(
+        /@import.+taiga-ui-local(.less)?';/g,
+        `@import '@taiga-ui/core/styles/taiga-ui-local.less';`,
+    );
 };
 
 export const appPrefix = (stringsPart: TemplateStringsArray, path: string = ``): string =>
@@ -76,6 +74,7 @@ export const getSupportModules = (
 export function getAllModules(entryPoint: Record<string, unknown>): string {
     const allModules = Object.keys(entryPoint)
         .filter(name => name.endsWith(`Module`))
+        .filter(name => name !== `TuiOrderWeekDaysPipeModule`) // TODO remove after release 3.7.0
         .join(`,\n\t\t`);
 
     return `${allModules}`;
@@ -92,22 +91,34 @@ export function getAllModules(entryPoint: Record<string, unknown>): string {
  * There is a limit to the amount of "static" analysis that the AOT compiler is willing to do.
  * See this {@link https://github.com/angular/angular/issues/42550 issue}
  */
-export async function getAllTaigaUIModulesFile(): Promise<string> {
+export async function getAllTaigaUIModulesFile(
+    additionalModules: Array<[fileName: string, parsedFile: TsFileModuleParser]> = [],
+): Promise<string> {
     /**
      * Violated DRY principle:
      * You can't just iterate the array with package-names - it will cause error:
      * `Warning: Critical dependency: the request of a dependency is an expression`
      * */
-    const [cdk, core, kit, charts, commerce, editor, mobile, table] = await Promise.all([
-        import(`@taiga-ui/cdk`),
-        import(`@taiga-ui/core`),
-        import(`@taiga-ui/kit`),
-        import(`@taiga-ui/addon-charts`),
-        import(`@taiga-ui/addon-commerce`),
-        import(`@taiga-ui/addon-editor`),
-        import(`@taiga-ui/addon-mobile`),
-        import(`@taiga-ui/addon-table`),
-    ]).then(modules => modules.map(getAllModules));
+    const [cdk, core, kit, charts, commerce, editor, mobile, preview, table, tablebars] =
+        await Promise.all([
+            import(`@taiga-ui/cdk`),
+            import(`@taiga-ui/core`),
+            import(`@taiga-ui/kit`),
+            import(`@taiga-ui/addon-charts`),
+            import(`@taiga-ui/addon-commerce`),
+            import(`@taiga-ui/addon-editor`),
+            import(`@taiga-ui/addon-mobile`),
+            import(`@taiga-ui/addon-preview`),
+            import(`@taiga-ui/addon-table`),
+            import(`@taiga-ui/addon-tablebars`),
+        ]).then(modules => modules.map(getAllModules));
+
+    const additionalModulesImports = additionalModules
+        .map(
+            ([fileName, {className}]) =>
+                `import {${className}} from '../${fileName.replace(`.ts`, ``)}';`,
+        )
+        .join(`\n`);
 
     return `
 import {
@@ -132,20 +143,29 @@ import {
     ${mobile}
 } from '@taiga-ui/addon-mobile';
 import {
+    ${preview}
+} from '@taiga-ui/addon-preview';
+import {
     ${table}
 } from '@taiga-ui/addon-table';
+import {
+    ${tablebars}
+} from '@taiga-ui/addon-tablebars';
 
+import {ScrollingModule} from '@angular/cdk/scrolling';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {PolymorpheusModule} from '@tinkoff/ng-polymorpheus';
 import {RouterModule} from '@angular/router';
+${additionalModulesImports}
 
 export const ALL_TAIGA_UI_MODULES = [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
+    ScrollingModule,
     PolymorpheusModule,
     RouterModule.forRoot([]),
     /* CDK */
@@ -162,8 +182,14 @@ export const ALL_TAIGA_UI_MODULES = [
     ${editor},
     /* ADDON-MOBILE */
     ${mobile},
+    /* ADDON-PREVIEW */
+    ${preview},
     /* ADDON-TABLE */
     ${table},
+    /* ADDON-TABLEBARS */
+    ${tablebars},
+    /* EXAMPLE MODULES */
+    ${additionalModules.map(([, {className}]) => className).join(`,\n\t\t`)}
 ];
 `;
 }

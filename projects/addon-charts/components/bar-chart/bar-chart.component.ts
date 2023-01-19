@@ -16,7 +16,13 @@ import {
     tuiPure,
     tuiSum,
 } from '@taiga-ui/cdk';
-import {TuiDriver, TuiHintOptionsDirective, TuiSizeL, TuiSizeS} from '@taiga-ui/core';
+import {
+    TuiDriver,
+    TuiHintOptionsDirective,
+    tuiHintOptionsProvider,
+    TuiSizeL,
+    TuiSizeS,
+} from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import {Observable} from 'rxjs';
 
@@ -26,13 +32,14 @@ function valueAssertion(value: ReadonlyArray<readonly number[]>): boolean {
     return valid;
 }
 
-const VALUE_ERROR = `All arrays must be of the same length`;
+const VALUE_ERROR = 'All arrays must be of the same length';
 
 @Component({
-    selector: `tui-bar-chart`,
-    templateUrl: `./bar-chart.template.html`,
-    styleUrls: [`./bar-chart.style.less`],
+    selector: 'tui-bar-chart',
+    templateUrl: './bar-chart.template.html',
+    styleUrls: ['./bar-chart.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    viewProviders: [tuiHintOptionsProvider({direction: 'top'})],
 })
 export class TuiBarChartComponent {
     private readonly autoIdString: string;
@@ -50,7 +57,7 @@ export class TuiBarChartComponent {
 
     @Input()
     @tuiDefaultProp()
-    size: TuiSizeS | TuiSizeL | null = `m`;
+    size: TuiSizeL | TuiSizeS | null = 'm';
 
     @Input()
     @tuiDefaultProp()
@@ -66,7 +73,7 @@ export class TuiBarChartComponent {
     }
 
     get hintContent(): PolymorpheusContent<TuiContextWithImplicit<number>> {
-        return this.hintOptions?.content || ``;
+        return this.hintOptions?.content || '';
     }
 
     get transposed(): ReadonlyArray<readonly number[]> {

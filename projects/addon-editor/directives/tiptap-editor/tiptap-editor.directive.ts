@@ -1,4 +1,12 @@
-import {Directive, ElementRef, Inject, Input, Output, Renderer2} from '@angular/core';
+import {
+    Directive,
+    ElementRef,
+    Inject,
+    Input,
+    Output,
+    Renderer2,
+    Self,
+} from '@angular/core';
 import {AbstractTuiEditor} from '@taiga-ui/addon-editor/abstract';
 import {
     INITIALIZATION_TIPTAP_CONTAINER,
@@ -12,7 +20,7 @@ import {takeUntil} from 'rxjs/operators';
 import {TuiTiptapEditorService} from './tiptap-editor.service';
 
 @Directive({
-    selector: `[tuiTiptapEditor]`,
+    selector: '[tuiTiptapEditor]',
     providers: [TuiDestroyService],
 })
 export class TuiTiptapEditorDirective {
@@ -40,7 +48,7 @@ export class TuiTiptapEditorDirective {
         @Inject(TuiTiptapEditorService) readonly editor: AbstractTuiEditor,
         @Inject(INITIALIZATION_TIPTAP_CONTAINER) readonly editorContainer: HTMLElement,
         @Inject(TIPTAP_EDITOR) private readonly editorLoaded$: Observable<Editor>,
-        @Inject(TuiDestroyService) destroy$: TuiDestroyService,
+        @Self() @Inject(TuiDestroyService) destroy$: TuiDestroyService,
     ) {
         this.editorLoaded$.pipe(takeUntil(destroy$)).subscribe(() => {
             this.renderer.appendChild(

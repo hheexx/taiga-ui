@@ -29,6 +29,7 @@ export function tuiCreateNumberMask({
     tuiAssert.assert(Number.isInteger(integerLimit));
     tuiAssert.assert(integerLimit >= 0);
 
+    // eslint-disable-next-line max-statements
     return (rawValue, {previousConformedValue}) => {
         if (previousConformedValue && requireDecimal) {
             const conformedWithoutSeparator = rawValue.split(thousandSymbol).join(``);
@@ -124,10 +125,10 @@ export function tuiCreateNumberMask({
 }
 
 function preventLeadingZeroes(
-    mask: Array<string | RegExp>,
+    mask: Array<RegExp | string>,
     isOnlyZeroDigit: boolean = false,
     leadingZerosAmount: number = 0,
-): Array<string | RegExp> {
+): Array<RegExp | string> {
     if (isOnlyZeroDigit || leadingZerosAmount === 0) {
         return mask;
     }
@@ -143,7 +144,9 @@ function preventLeadingZeroes(
 
     if (isCaretTrap && leadingZerosAmount === 1) {
         return mask;
-    } else if (isCaretTrap) {
+    }
+
+    if (isCaretTrap) {
         mask.unshift(NON_ZERO_DIGIT);
 
         return mask;
@@ -181,7 +184,7 @@ function isDecimalSymbol(
     return str === decimalSymbol;
 }
 
-function convertToMask(strNumber: string): Array<string | RegExp> {
+function convertToMask(strNumber: string): Array<RegExp | string> {
     return strNumber
         .split(``)
         .map(char => (TUI_DIGIT_REGEXP.test(char) ? TUI_DIGIT_REGEXP : char));

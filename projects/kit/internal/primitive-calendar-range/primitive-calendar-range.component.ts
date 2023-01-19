@@ -8,6 +8,7 @@ import {
     OnInit,
     Optional,
     Output,
+    Self,
 } from '@angular/core';
 import {
     ALWAYS_FALSE_HANDLER,
@@ -31,9 +32,9 @@ import {takeUntil} from 'rxjs/operators';
  * @internal
  */
 @Component({
-    selector: `tui-primitive-calendar-range`,
-    templateUrl: `./primitive-calendar-range.template.html`,
-    styleUrls: [`./primitive-calendar-range.style.less`],
+    selector: 'tui-primitive-calendar-range',
+    templateUrl: './primitive-calendar-range.template.html',
+    styleUrls: ['./primitive-calendar-range.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TuiDestroyService],
 })
@@ -79,7 +80,7 @@ export class TuiPrimitiveCalendarRangeComponent implements OnInit {
         @Optional()
         valueChanges: Observable<TuiDayRange | null> | null,
         @Inject(ChangeDetectorRef) changeDetectorRef: ChangeDetectorRef,
-        @Inject(TuiDestroyService) destroy$: TuiDestroyService,
+        @Self() @Inject(TuiDestroyService) destroy$: TuiDestroyService,
     ) {
         if (!valueChanges) {
             return;

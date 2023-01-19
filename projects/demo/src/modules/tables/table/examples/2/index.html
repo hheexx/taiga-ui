@@ -37,11 +37,12 @@
         </tr>
     </thead>
     <tbody
+        *tuiLet="users | tuiTableSort as sortedUsers"
         tuiTbody
-        [data]="users"
+        [data]="sortedUsers"
     >
         <tr
-            *tuiRow="let item of users; let index = index"
+            *ngFor="let item of sortedUsers; let index = index"
             tuiTr
         >
             <td
@@ -90,6 +91,7 @@
                     icon="tuiIconTrash"
                     title="Remove"
                     shape="rounded"
+                    type="button"
                     class="remove"
                     (click)="remove(item)"
                 ></button>

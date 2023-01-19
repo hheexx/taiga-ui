@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {changeDetection} from '@demo/emulate/change-detection';
 import {
+    TUI_IS_CYPRESS,
     TuiDay,
     TuiDayLike,
     TuiDayRange,
@@ -11,9 +12,9 @@ import {
 import {TuiPoint} from '@taiga-ui/core';
 
 @Component({
-    selector: `tui-line-days-chart-example-2`,
-    templateUrl: `./index.html`,
-    styleUrls: [`./index.less`],
+    selector: 'tui-line-days-chart-example-2',
+    templateUrl: './index.html',
+    styleUrls: ['./index.less'],
     changeDetection,
 })
 export class TuiLineDaysChartExample2 {
@@ -28,6 +29,8 @@ export class TuiLineDaysChartExample2 {
 
     readonly maxLength: TuiDayLike = {month: 6};
 
+    constructor(@Inject(TUI_IS_CYPRESS) readonly isCypress: boolean) {}
+
     get range(): TuiDayRange {
         return this.computeRange(this.show);
     }
@@ -38,7 +41,7 @@ export class TuiLineDaysChartExample2 {
     }
 
     @tuiPure
-    getDate(day: number | TuiDay, date: TuiDay): TuiDay {
+    getDate(day: TuiDay | number, date: TuiDay): TuiDay {
         return day instanceof TuiDay ? day : date.append({day});
     }
 
@@ -97,10 +100,14 @@ export class TuiLineDaysChartExample2 {
                     ...array,
                     [
                         from.append({day: i}),
-                        Math.max(
-                            (i ? array[i - 1][1] : initial) + Math.random() * 10 - 5,
-                            0,
-                        ),
+                        this.isCypress
+                            ? initial
+                            : Math.max(
+                                  (i ? array[i - 1][1] : initial) +
+                                      Math.random() * 10 -
+                                      5,
+                                  0,
+                              ),
                     ],
                 ],
                 [],

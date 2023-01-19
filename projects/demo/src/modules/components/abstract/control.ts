@@ -33,7 +33,7 @@ export abstract class AbstractExampleTuiControl
 {
     abstract readonly control: AbstractControl;
 
-    readonly sizeVariants: ReadonlyArray<TuiSizeS | TuiSizeL> = [`s`, `m`, `l`];
+    readonly sizeVariants: ReadonlyArray<TuiSizeL | TuiSizeS> = [`s`, `m`, `l`];
 
     readonly hintContentVariants: readonly string[] = [``, `Some content`];
 
@@ -99,9 +99,11 @@ export abstract class AbstractExampleTuiControl
 
     labelOutside = false;
 
-    size: TuiSizeS | TuiSizeL = this.sizeVariants[2];
+    size: TuiSizeL | TuiSizeS = this.sizeVariants[2];
 
     exampleText = ``;
+
+    filler = ``;
 
     maxHeight: number | null = null;
 
@@ -138,6 +140,14 @@ export abstract class AbstractExampleTuiControl
     dropdownMinHeight = TUI_DROPDOWN_DEFAULT_OPTIONS.minHeight;
 
     dropdownMaxHeight = TUI_DROPDOWN_DEFAULT_OPTIONS.maxHeight;
+
+    readonly prefixVariants: readonly string[] = [``, `$`, `GBP`, `Very long text`];
+
+    prefix = this.prefixVariants[0];
+
+    postfix = this.prefixVariants[0];
+
+    dropdownOffset = TUI_DROPDOWN_DEFAULT_OPTIONS.offset;
 
     get customContent(): PolymorpheusContent {
         return this.customContentSelected === CUSTOM_SVG_NAME

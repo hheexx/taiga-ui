@@ -1,3 +1,4 @@
+import {TUI_COMPONENTS_EXCLUSION} from '@demo-integrations/support/properties/exclusions';
 import {defineConfig} from 'cypress';
 
 export const viewportWidth = 1440;
@@ -16,7 +17,7 @@ export const TUI_CYPRESS_CONFIG: Cypress.ConfigOptions = {
      * Time, in milliseconds, to wait until most
      * DOM based commands are considered timed out.
      */
-    defaultCommandTimeout: 30_000,
+    defaultCommandTimeout: 4000,
 
     /**
      * @description:
@@ -27,6 +28,16 @@ export const TUI_CYPRESS_CONFIG: Cypress.ConfigOptions = {
 
     /**
      * @description:
+     * Number of times to retry a failed test.
+     * If a number is set, tests will retry in both runMode and openMode.
+     */
+    retries: {
+        runMode: 1, // Configure retry attempts for `cypress run`
+        openMode: 0, // Configure retry attempts for `cypress open`
+    },
+
+    /**
+     * @description:
      * The number of tests for which snapshots and command data are kept in memory.
      * Reduce this number if you are experiencing high memory
      * consumption in your browser during a test run.
@@ -34,7 +45,7 @@ export const TUI_CYPRESS_CONFIG: Cypress.ConfigOptions = {
     numTestsKeptInMemory: 0,
 
     e2e: {
-        specPattern: `cypress/tests/**/*.spec.ts`,
+        specPattern: `cypress/tests/desktop/**/*.cy.ts`,
         supportFile: `cypress/support/e2e.ts`,
         baseUrl: `http://localhost:3333`,
         /**
@@ -48,9 +59,16 @@ export const TUI_CYPRESS_CONFIG: Cypress.ConfigOptions = {
     },
 };
 
+export const TUI_CYPRESS_ENV = {
+    componentsExclusion: TUI_COMPONENTS_EXCLUSION,
+    waitBeforeScreenshotComponents: 0,
+    waitRenderedFont: `Manrope`,
+    waitBeforeScreenshot: 1000,
+    waitBeforeAction: 50,
+};
+
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
     ...TUI_CYPRESS_CONFIG,
-    env: {
-        waitRenderedFont: `Manrope`,
-    },
+    env: TUI_CYPRESS_ENV,
 });

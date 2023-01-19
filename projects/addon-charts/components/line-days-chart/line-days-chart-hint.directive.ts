@@ -7,6 +7,7 @@ import {
     Input,
     NgZone,
     QueryList,
+    Self,
 } from '@angular/core';
 import {tuiLineChartDrivers} from '@taiga-ui/addon-charts/components/line-chart';
 import {
@@ -24,23 +25,25 @@ import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 import {combineLatest, Observable} from 'rxjs';
 import {filter, map, takeUntil} from 'rxjs/operators';
 
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiLineDaysChartComponent} from './line-days-chart.component';
 
 // TODO: Consider extending TuiLineChartHintDirective
 @Directive({
-    selector: `[tuiLineChartHint]`,
+    selector: '[tuiLineChartHint]',
     providers: [TuiDestroyService, TuiHoveredService],
 })
 export class TuiLineDaysChartHintDirective implements AfterContentInit {
     @ContentChildren(forwardRef(() => TuiLineDaysChartComponent))
     private readonly charts: QueryList<TuiLineDaysChartComponent> = EMPTY_QUERY;
 
-    @Input(`tuiLineChartHint`)
+    @Input('tuiLineChartHint')
     @tuiDefaultProp()
-    hint: PolymorpheusContent<TuiContextWithImplicit<readonly TuiPoint[]>> = ``;
+    hint: PolymorpheusContent<TuiContextWithImplicit<readonly TuiPoint[]>> = '';
 
     constructor(
-        @Inject(TuiDestroyService) private readonly destroy$: TuiDestroyService,
+        @Self() @Inject(TuiDestroyService) private readonly destroy$: TuiDestroyService,
         @Inject(NgZone) private readonly ngZone: NgZone,
         @Inject(TuiHoveredService) private readonly hovered$: Observable<boolean>,
     ) {}
@@ -65,7 +68,7 @@ export class TuiLineDaysChartHintDirective implements AfterContentInit {
     raise(day: TuiDay): void {
         const current = this.charts
             .map(({value}) => find(value, day))
-            .filter(([_, value]) => !isNaN(value));
+            .filter(([_, value]) => !Number.isNaN(value));
         const sorted = [...current].sort((a, b) => a[1] - b[1]);
 
         this.charts.forEach((chart, index) => {

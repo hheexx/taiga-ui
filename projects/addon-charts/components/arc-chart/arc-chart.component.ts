@@ -14,7 +14,7 @@ import {DomSanitizer, SafeValue} from '@angular/platform-browser';
 import {tuiDefaultProp, tuiTypedFromEvent} from '@taiga-ui/cdk';
 import {TuiSizeXL} from '@taiga-ui/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
-import {mapTo, startWith, switchMap, tap} from 'rxjs/operators';
+import {map, startWith, switchMap, tap} from 'rxjs/operators';
 
 // 3/4 with 1% safety offset
 const ARC = 0.76;
@@ -38,15 +38,15 @@ const GAP: Record<TuiSizeXL, number> = {
 };
 
 @Component({
-    selector: `tui-arc-chart`,
-    templateUrl: `./arc-chart.template.html`,
-    styleUrls: [`./arc-chart.style.less`],
+    selector: 'tui-arc-chart',
+    templateUrl: './arc-chart.template.html',
+    styleUrls: ['./arc-chart.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiArcChartComponent {
     private readonly arcs$ = new ReplaySubject<QueryList<ElementRef<SVGElement>>>(1);
 
-    @ViewChildren(`arc`)
+    @ViewChildren('arc')
     set arcs(arcs: QueryList<ElementRef<SVGElement>>) {
         this.arcs$.next(arcs);
     }
@@ -56,9 +56,9 @@ export class TuiArcChartComponent {
     value: readonly number[] = [];
 
     @Input()
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     @tuiDefaultProp()
-    size: TuiSizeXL = `m`;
+    size: TuiSizeXL = 'm';
 
     @Input()
     @tuiDefaultProp()
@@ -66,11 +66,11 @@ export class TuiArcChartComponent {
 
     @Input()
     @tuiDefaultProp()
-    minLabel = `0%`;
+    minLabel = '0%';
 
     @Input()
     @tuiDefaultProp()
-    maxLabel = `100%`;
+    maxLabel = '100%';
 
     @Input()
     @tuiDefaultProp()
@@ -102,19 +102,19 @@ export class TuiArcChartComponent {
         });
     }
 
-    @HostBinding(`style.width.rem`)
-    @HostBinding(`style.height.rem`)
+    @HostBinding('style.width.rem')
+    @HostBinding('style.height.rem')
     get width(): number {
         return SIZE[this.size];
     }
 
-    @HostBinding(`style.strokeWidth.rem`)
+    @HostBinding('style.strokeWidth.rem')
     get strokeWidth(): number {
         return WIDTH[this.size];
     }
 
     isInactive(index: number): boolean {
-        return !isNaN(this.activeItemIndex) && index !== this.activeItemIndex;
+        return !Number.isNaN(this.activeItemIndex) && index !== this.activeItemIndex;
     }
 
     getInset(index: number): number {
@@ -143,8 +143,8 @@ export class TuiArcChartComponent {
 function arcsToIndex(arcs: QueryList<ElementRef<SVGElement>>): Array<Observable<number>> {
     return arcs.map(({nativeElement}, index) =>
         merge(
-            tuiTypedFromEvent(nativeElement, `mouseenter`).pipe(mapTo(index)),
-            tuiTypedFromEvent(nativeElement, `mouseleave`).pipe(mapTo(NaN)),
+            tuiTypedFromEvent(nativeElement, 'mouseenter').pipe(map(() => index)),
+            tuiTypedFromEvent(nativeElement, 'mouseleave').pipe(map(() => NaN)),
         ),
     );
 }

@@ -154,13 +154,27 @@
             heading="Mask"
             [content]="example3"
         >
+            <tui-notification
+                i18n
+                class="b-form"
+            >
+                Taiga UI input is compatible with
+                <a
+                    tuiLink
+                    rel="noreferrer"
+                    href="https://www.npmjs.com/package/angular2-text-mask"
+                    target="_blank"
+                >
+                    angular2-text-mask
+                </a>
+            </tui-notification>
             <tui-input-example-3></tui-input-example-3>
         </tui-doc-example>
 
         <tui-doc-example
             id="autocomplete"
             i18n-heading
-            heading="Autocomplete"
+            heading="Autocomplete with dropdown"
             [content]="example4"
         >
             <tui-input-example-4></tui-input-example-4>
@@ -209,6 +223,14 @@
         >
             <tui-input-example-9></tui-input-example-9>
         </tui-doc-example>
+
+        <tui-doc-example
+            id="autofill"
+            heading="Disable browser autofill"
+            [content]="example10"
+        >
+            <tui-input-example-10></tui-input-example-10>
+        </tui-doc-example>
     </ng-template>
 
     <ng-template pageTab>
@@ -220,27 +242,32 @@
                     [pseudoInvalid]="pseudoInvalid"
                     [pseudoFocus]="pseudoFocused"
                     [pseudoHover]="pseudoHovered"
+                    [readOnly]="readOnly"
                     [tuiTextfieldIcon]="icon"
                     [tuiTextfieldIconLeft]="iconLeft"
-                    [readOnly]="readOnly"
                     [tuiTextfieldLabelOutside]="labelOutside"
                     [tuiTextfieldCustomContent]="customContent"
                     [tuiTextfieldSize]="size"
+                    [tuiTextfieldPrefix]="prefix"
+                    [tuiTextfieldPostfix]="postfix"
+                    [tuiTextfieldFiller]="filler"
                     [tuiTextfieldCleaner]="cleaner"
                     [tuiDropdownAlign]="dropdownAlign"
                     [tuiDropdownDirection]="dropdownDirection"
                     [tuiDropdownLimitWidth]="dropdownLimitWidth"
                     [tuiDropdownMinHeight]="dropdownMinHeight"
                     [tuiDropdownMaxHeight]="dropdownMaxHeight"
+                    [tuiDropdownOffset]="dropdownOffset"
                     [tuiHintContent]="hintContent"
                     [tuiHintDirection]="hintDirection"
                     [tuiHintAppearance]="hintAppearance"
+                    [style.text-align]="textAlign"
                 >
                     Label
                     <strong>strong text</strong>
                     <input
                         tuiTextfield
-                        [attr.placeholder]="placeholder"
+                        [placeholder]="placeholder"
                     />
                 </tui-input>
             </ng-template>
@@ -283,15 +310,29 @@
             </ng-template>
             <ng-template
                 i18n
-                documentationPropertyName="attr.placeholder"
+                documentationPropertyName="placeholder"
                 documentationPropertyMode="input"
                 documentationPropertyType="string"
                 [(documentationPropertyValue)]="placeholder"
             >
-                Placeholder
+                Placeholder (use external
+                <code>&lt;input tuiTextfield/&gt;</code>
+                to set it)
             </ng-template>
         </tui-doc-documentation>
         <inherited-documentation [dropdown]="true"></inherited-documentation>
+        <tui-doc-documentation heading="CSS customization">
+            <ng-template
+                i18n
+                documentationPropertyMode="input"
+                documentationPropertyType="string"
+                documentationPropertyName="style.text-align"
+                [documentationPropertyValues]="textAlignVariants"
+                [(documentationPropertyValue)]="textAlign"
+            >
+                Custom align content by text-align
+            </ng-template>
+        </tui-doc-documentation>
     </ng-template>
 
     <ng-template pageTab>

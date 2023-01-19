@@ -1,3 +1,4 @@
+import {KeyValue} from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -8,9 +9,9 @@ import {
 import {tuiDefaultProp} from '@taiga-ui/cdk';
 
 @Component({
-    selector: `tui-palette`,
-    templateUrl: `./palette.template.html`,
-    styleUrls: [`./palette.style.less`],
+    selector: 'tui-palette',
+    templateUrl: './palette.template.html',
+    styleUrls: ['./palette.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiPaletteComponent {
@@ -20,4 +21,9 @@ export class TuiPaletteComponent {
 
     @Output()
     readonly selectedColor = new EventEmitter<string>();
+
+    originalOrder = (
+        _a: KeyValue<string, string>,
+        _b: KeyValue<string, string>,
+    ): number => 0;
 }

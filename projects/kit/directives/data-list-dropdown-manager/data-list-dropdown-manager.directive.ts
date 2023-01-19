@@ -3,10 +3,13 @@ import {
     ContentChildren,
     Directive,
     ElementRef,
+    Inject,
     QueryList,
+    Self,
 } from '@angular/core';
 import {
     EMPTY_QUERY,
+    TuiDestroyService,
     tuiGetClosestFocusable,
     tuiItemsQueryListObservable,
     tuiPreventDefault,
@@ -19,15 +22,16 @@ import {
     debounceTime,
     filter,
     map,
-    mapTo,
     shareReplay,
     switchMap,
     take,
+    takeUntil,
     tap,
 } from 'rxjs/operators';
 
 @Directive({
-    selector: `tui-data-list[tuiDataListDropdownManager]`,
+    selector: 'tui-data-list[tuiDataListDropdownManager]',
+    providers: [TuiDestroyService],
 })
 export class TuiDataListDropdownManagerDirective implements AfterViewInit {
     @ContentChildren(TuiDropdownDirective, {descendants: true})
@@ -36,8 +40,12 @@ export class TuiDataListDropdownManagerDirective implements AfterViewInit {
     @ContentChildren(TuiDropdownDirective, {read: ElementRef, descendants: true})
     private readonly elements: QueryList<ElementRef<HTMLElement>> = EMPTY_QUERY;
 
+    constructor(
+        @Self() @Inject(TuiDestroyService) private readonly destroy$: TuiDestroyService,
+    ) {}
+
     ngAfterViewInit(): void {
-        this.right$.subscribe(index => {
+        this.right$.pipe(takeUntil(this.destroy$)).subscribe(index => {
             this.tryToFocus(index);
         });
 
@@ -58,12 +66,12 @@ export class TuiDataListDropdownManagerDirective implements AfterViewInit {
                     const {nativeElement} = dropdown.dropdownBoxRef.location;
                     const mouseEnter$ = tuiTypedFromEvent(
                         nativeElement,
-                        `mouseenter`,
+                        'mouseenter',
                     ).pipe(take(1));
                     const esc$ = merge(
-                        tuiTypedFromEvent(element.nativeElement, `keydown`),
-                        tuiTypedFromEvent(nativeElement, `keydown`),
-                    ).pipe(filter(({keyCode}) => keyCode === 27));
+                        tuiTypedFromEvent(element.nativeElement, 'keydown'),
+                        tuiTypedFromEvent(nativeElement, 'keydown'),
+                    ).pipe(filter(({key}) => key === 'Escape'));
 
                     return merge(mouseEnter$, esc$).pipe(
                         tap(event => {
@@ -72,10 +80,11 @@ export class TuiDataListDropdownManagerDirective implements AfterViewInit {
                             }
 
                             element.nativeElement.focus();
-                            dropdown.toggle(`offsetX` in event);
+                            dropdown.toggle('offsetX' in event);
                         }),
                     );
                 }),
+                takeUntil(this.destroy$),
             )
             .subscribe();
     }
@@ -94,10 +103,10 @@ export class TuiDataListDropdownManagerDirective implements AfterViewInit {
             switchMap(elements =>
                 merge(
                     ...elements.map((element, index) =>
-                        tuiTypedFromEvent(element, `keydown`).pipe(
-                            filter(({keyCode}) => keyCode === 39),
+                        tuiTypedFromEvent(element, 'keydown').pipe(
+                            filter(({key}) => key === 'ArrowRight'),
                             tuiPreventDefault(),
-                            mapTo(index),
+                            map(() => index),
                         ),
                     ),
                 ),
@@ -111,7 +120,7 @@ export class TuiDataListDropdownManagerDirective implements AfterViewInit {
             switchMap(elements =>
                 merge(
                     ...elements.map((element, index) =>
-                        tuiTypedFromEvent(element, `click`).pipe(mapTo(index)),
+                        tuiTypedFromEvent(element, 'click').pipe(map(() => index)),
                     ),
                 ),
             ),
@@ -125,13 +134,13 @@ export class TuiDataListDropdownManagerDirective implements AfterViewInit {
                 merge(
                     ...elements.map((element, index) =>
                         merge(
-                            tuiTypedFromEvent(element, `focus`),
-                            tuiTypedFromEvent(element, `blur`),
+                            tuiTypedFromEvent(element, 'focus'),
+                            tuiTypedFromEvent(element, 'blur'),
                         ).pipe(
                             filter(({relatedTarget}) =>
                                 this.notInDropdown(relatedTarget, index),
                             ),
-                            map(({type}) => (type === `focus` ? index : NaN)),
+                            map(({type}) => (type === 'focus' ? index : NaN)),
                         ),
                     ),
                 ),

@@ -14,23 +14,25 @@ import {
 } from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiSidebarDirective} from './sidebar.directive';
 
 @Component({
-    selector: `aside[tuiSidebar]`,
-    templateUrl: `./sidebar.template.html`,
-    styleUrls: [`./sidebar.style.less`],
+    selector: 'aside[tuiSidebar]',
+    templateUrl: './sidebar.template.html',
+    styleUrls: ['./sidebar.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [tuiSlideIn],
 })
 export class TuiSidebarComponent implements DoCheck {
     private readonly left = {
-        value: `left`,
+        value: 'left',
         ...this.options,
     } as const;
 
     private readonly right = {
-        value: `right`,
+        value: 'right',
         ...this.options,
     } as const;
 
@@ -39,12 +41,12 @@ export class TuiSidebarComponent implements DoCheck {
         @Inject(TuiSidebarDirective) private readonly directive: TuiSidebarDirective,
     ) {}
 
-    @HostBinding(`@tuiSlideIn`)
+    @HostBinding('@tuiSlideIn')
     get animation(): TuiAnimationOptions {
-        return this.direction === `left` ? this.left : this.right;
+        return this.direction === 'left' ? this.left : this.right;
     }
 
-    @HostBinding(`class`)
+    @HostBinding('class')
     get directionHostClass(): string {
         return `t-${this.directive.direction}`;
     }

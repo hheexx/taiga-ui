@@ -9,6 +9,7 @@
         appearance=""
         size="s"
         icon="tuiIconAlertCircleLarge"
+        type="button"
         class="icon"
     ></button>
 </tui-hosted-dropdown>
@@ -59,6 +60,15 @@
                 TuiDropdownModule
             </a>
             to configure dropdown options.
+        </li>
+
+        <li
+            *ngIf="includesDataListWrapper(code)"
+            class="tui-list__item"
+        >
+            This example requires import of
+            <code>TuiDataListWrapperModule</code>
+            .
         </li>
     </ul>
 </ng-template>

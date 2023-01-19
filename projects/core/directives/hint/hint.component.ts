@@ -7,6 +7,7 @@ import {
     HostListener,
     Inject,
     Optional,
+    Self,
 } from '@angular/core';
 import {
     tuiClamp,
@@ -31,40 +32,38 @@ import {TuiHintHoverDirective} from './hint-hover.directive';
 import {TuiHintPointerDirective} from './hint-pointer.directive';
 
 @Component({
-    selector: `tui-hint`,
+    selector: 'tui-hint',
     template: `
         <ng-container *polymorpheusOutlet="content as text; context: context">
             {{ text }}
         </ng-container>
     `,
-    styleUrls: [`./hint.style.less`],
+    styleUrls: ['./hint.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TuiDestroyService, TuiPositionService, TuiHoveredService],
     animations: [tuiFadeIn],
 })
 export class TuiHintComponent<C = any> {
-    @HostBinding(`@tuiFadeIn`)
-    readonly animation = {value: ``, ...this.options} as const;
+    @HostBinding('@tuiFadeIn')
+    readonly animation = {value: '', ...this.options} as const;
 
-    @HostBinding(`attr.data-appearance`)
+    @HostBinding('attr.data-appearance')
     readonly appearance = this.polymorpheus.$implicit.appearance || this.mode?.mode;
 
-    @HostBinding(`class._untouchable`)
+    @HostBinding('class._untouchable')
     readonly untouchable = !!this.pointer;
 
     constructor(
         @Inject(TuiHoveredService) hovered$: Observable<boolean>,
         @Inject(TuiPositionService) position$: Observable<TuiPoint>,
-        @Inject(TuiDestroyService) destroy$: Observable<void>,
+        @Self() @Inject(TuiDestroyService) destroy$: Observable<void>,
         @Inject(TuiRectAccessor) protected readonly accessor: TuiRectAccessor,
         @Inject(ElementRef) private readonly elementRef: ElementRef<HTMLElement>,
         @Inject(TUI_ANIMATION_OPTIONS) private readonly options: AnimationOptions,
         @Inject(POLYMORPHEUS_CONTEXT)
         private readonly polymorpheus: TuiContextWithImplicit<TuiPortalItem<C>>,
         @Inject(TuiHintHoverDirective) private readonly hover: TuiHintHoverDirective,
-        @Optional()
-        @Inject(TuiHintPointerDirective)
-        private readonly pointer: unknown,
+        @Optional() @Inject(TuiHintPointerDirective) private readonly pointer: unknown,
         @Optional()
         @Inject(TuiModeDirective)
         private readonly mode: TuiModeDirective | null,
@@ -84,7 +83,7 @@ export class TuiHintComponent<C = any> {
         return this.polymorpheus.$implicit.context;
     }
 
-    @HostListener(`document:click`, [`$event.target`])
+    @HostListener('document:click', ['$event.target'])
     onClick(target: HTMLElement): void {
         if (!this.elementRef.nativeElement.contains(target)) {
             this.hover.toggle(false);
@@ -97,12 +96,13 @@ export class TuiHintComponent<C = any> {
         const {height, width} = nativeElement.getBoundingClientRect();
         const {style} = nativeElement;
         const rect = this.accessor.getClientRect();
+        const safeLeft = Math.max(left, 4);
         const beakTop = rect.top + rect.height / 2 - top;
-        const beakLeft = rect.left + rect.width / 2 - left;
+        const beakLeft = rect.left + rect.width / 2 - safeLeft;
 
         style.top = tuiPx(top);
-        style.left = tuiPx(left);
-        style.setProperty(`--top`, tuiPx(tuiClamp(beakTop, 0, height - 1)));
-        style.setProperty(`--left`, tuiPx(tuiClamp(beakLeft, 0, width - 1)));
+        style.left = tuiPx(safeLeft);
+        style.setProperty('--top', tuiPx(tuiClamp(beakTop, 0.5, height - 1)));
+        style.setProperty('--left', tuiPx(tuiClamp(beakLeft, 0.5, width - 1)));
     }
 }

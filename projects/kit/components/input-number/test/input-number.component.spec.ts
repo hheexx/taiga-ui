@@ -10,10 +10,8 @@ import {
     TuiSizeS,
     TuiTextfieldControllerModule,
 } from '@taiga-ui/core';
+import {TuiInputNumberComponent, TuiInputNumberModule} from '@taiga-ui/kit';
 import {configureTestSuite, TuiNativeInputPO, TuiPageObject} from '@taiga-ui/testing';
-
-import {TuiInputNumberComponent} from '../input-number.component';
-import {TuiInputNumberModule} from '../input-number.module';
 
 describe(`InputNumber`, () => {
     @Component({
@@ -50,7 +48,7 @@ describe(`InputNumber`, () => {
         decimal: TuiDecimal = `never`;
         cleaner = true;
         defaultValues = false;
-        size: TuiSizeS | TuiSizeL = `m`;
+        size: TuiSizeL | TuiSizeS = `m`;
         hintContent: string | null = `prompt`;
     }
 
@@ -110,6 +108,15 @@ describe(`InputNumber`, () => {
             fixture.detectChanges();
             expect(getNativeInput()!.nativeElement.value).toBe(`12,34`);
         });
+
+        it(`Default min and max are safe integers`, async () => {
+            await fixture.whenStable();
+
+            fixture.detectChanges();
+
+            expect(testComponent.component.min).toBe(Number.MIN_SAFE_INTEGER);
+            expect(testComponent.component.max).toBe(Number.MAX_SAFE_INTEGER);
+        });
     });
 
     it(`Non-zero pennies are not shown when decimal = 'never'`, async () => {
@@ -119,6 +126,7 @@ describe(`InputNumber`, () => {
         await fixture.whenStable();
 
         fixture.detectChanges();
+
         expect(getNativeInput()!.nativeElement.value).toBe(`12`);
     });
 
@@ -141,9 +149,7 @@ describe(`InputNumber`, () => {
         await fixture.whenStable();
 
         fixture.detectChanges();
-        expect(getNativeInput()!.nativeElement!.value).toBe(
-            `12${CHAR_NO_BREAK_SPACE}345`,
-        );
+        expect(getNativeInput()!.nativeElement.value).toBe(`12${CHAR_NO_BREAK_SPACE}345`);
     });
 
     describe(`onValueChange | updating form values`, () => {
@@ -281,9 +287,13 @@ describe(`InputNumber`, () => {
         it(`formats a value if the element is out of focus`, () => {
             component.decimal = `not-zero`;
 
-            inputPO.sendText(`10,0`);
+            inputPO.sendTextAndBlur(`10,0`);
 
             expect(component.computedValue).toBe(`10`);
+
+            inputPO.sendText(`10,0`);
+
+            expect(component.computedValue).toBe(`10,0`);
         });
     });
 

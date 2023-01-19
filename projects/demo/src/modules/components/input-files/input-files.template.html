@@ -34,7 +34,7 @@
         </tui-doc-example>
 
         <tui-doc-example
-            id="With button"
+            id="with-button"
             i18n-heading
             heading="With button"
             [content]="example4"
@@ -50,23 +50,43 @@
         >
             <tui-input-files-example-5></tui-input-files-example-5>
         </tui-doc-example>
+
+        <tui-doc-example
+            id="front-camera"
+            i18n-heading
+            heading="Camera capture"
+            [content]="example6"
+        >
+            <tui-notification
+                status="warning"
+                class="tui-space_bottom-4"
+            >
+                The capture attribute works only on mobile browsers
+            </tui-notification>
+            <tui-input-files-example-6></tui-input-files-example-6>
+        </tui-doc-example>
     </ng-template>
 
     <ng-template pageTab>
         <tui-doc-demo>
             <tui-input-files
                 [formControl]="control"
-                [accept]="accept"
                 [link]="link"
                 [label]="label"
                 [maxFileSize]="maxFileSize"
-                [multiple]="multiple"
                 [focusable]="focusable"
                 [pseudoFocus]="pseudoFocused"
                 [pseudoHover]="pseudoHovered"
                 [pseudoActive]="pseudoPressed"
                 (reject)="updateRejected($event)"
-            ></tui-input-files>
+            >
+                <input
+                    tuiInputFiles
+                    [attr.multiple]="multiple"
+                    [attr.accept]="accept"
+                    [attr.capture]="capture"
+                />
+            </tui-input-files>
             <tui-files class="tui-space_top-2">
                 <ng-container *ngIf="multiple; else single">
                     <ng-container *ngFor="let file of control.valueChanges | async">
@@ -75,6 +95,7 @@
                             [file]="file"
                             [size]="size"
                             [showSize]="showSize"
+                            [showDelete]="showDelete"
                             (removed)="removeFile(file)"
                         ></tui-file>
                     </ng-container>
@@ -87,6 +108,7 @@
                             [file]="file"
                             [size]="size"
                             [showSize]="showSize"
+                            [showDelete]="showDelete"
                         ></tui-file>
                     </ng-container>
                 </ng-template>
@@ -98,6 +120,7 @@
                         [file]="file"
                         [size]="size"
                         [showSize]="showSize"
+                        [showDelete]="showDelete"
                         (removed)="removeRejected(file)"
                     ></tui-file>
                 </ng-container>
@@ -114,7 +137,18 @@
                 <code>formControl.disable()</code>
                 )
             </ng-template>
-
+            <ng-template
+                i18n
+                documentationPropertyName="capture"
+                documentationPropertyMode="input"
+                documentationPropertyType="'user' | 'environment' | null"
+                [documentationPropertyValues]="captureVariants"
+                [(documentationPropertyValue)]="capture"
+            >
+                Allowed capture (for native attribute
+                <code>capture</code>
+                )
+            </ng-template>
             <ng-template
                 i18n
                 documentationPropertyName="accept"
@@ -179,13 +213,21 @@
         <tui-doc-documentation heading="TuiFile">
             <ng-template
                 i18n
+                documentationPropertyName="showDelete"
+                documentationPropertyMode="input"
+                documentationPropertyType="boolean"
+                [(documentationPropertyValue)]="showDelete"
+            >
+                Allow to delete file after attach it
+            </ng-template>
+            <ng-template
+                i18n
                 documentationPropertyName="file"
                 documentationPropertyMode="input"
                 documentationPropertyType="TuiFileLike"
             >
                 File
             </ng-template>
-
             <ng-template
                 i18n
                 documentationPropertyName="state"
@@ -194,7 +236,6 @@
             >
                 State of the file
             </ng-template>
-
             <ng-template
                 i18n
                 documentationPropertyName="showSize"
@@ -204,7 +245,6 @@
             >
                 Show file size
             </ng-template>
-
             <ng-template
                 i18n
                 documentationPropertyName="size"
@@ -215,10 +255,9 @@
             >
                 Component size
             </ng-template>
-
             <ng-template
                 i18n
-                documentationPropertyName="fileRemoved"
+                documentationPropertyName="removed"
                 documentationPropertyMode="output"
                 documentationPropertyType="TuiFileLike"
             >

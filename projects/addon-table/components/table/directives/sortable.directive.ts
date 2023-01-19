@@ -2,13 +2,15 @@ import {Directive, DoCheck, forwardRef, Inject, OnInit} from '@angular/core';
 import {TuiComparator} from '@taiga-ui/addon-table/types';
 
 import {TuiThComponent} from '../th/th.component';
+// TODO: find the best way for prevent cycle
+// eslint-disable-next-line import/no-cycle
 import {TuiSortByDirective} from './sort-by.directive';
 import {TuiTableDirective} from './table.directive';
 
 @Directive({
-    selector: `th[tuiTh][tuiSortable]`,
+    selector: 'th[tuiTh][tuiSortable]',
 })
-export class TuiSortableDirective<T extends Record<keyof T, any>>
+export class TuiSortableDirective<T extends Partial<Record<keyof T, any>>>
     implements DoCheck, OnInit
 {
     constructor(

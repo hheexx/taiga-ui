@@ -18,12 +18,12 @@ import {TUI_TABLE_PROVIDER} from '../providers/table.provider';
 import {TuiThComponent} from '../th/th.component';
 
 @Component({
-    selector: `tr[tuiThGroup]`,
-    templateUrl: `./th-group.template.html`,
+    selector: 'tr[tuiThGroup]',
+    templateUrl: './th-group.template.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [TUI_TABLE_PROVIDER],
 })
-export class TuiThGroupComponent<T extends Record<keyof T, any>>
+export class TuiThGroupComponent<T extends Partial<Record<keyof T, any>>>
     implements AfterContentInit
 {
     @ContentChild(forwardRef(() => TuiThComponent))

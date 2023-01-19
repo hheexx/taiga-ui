@@ -59,6 +59,7 @@
                 [tuiTextfieldCustomContent]="customContent"
                 [tuiTextfieldLabelOutside]="labelOutside"
                 [tuiTextfieldSize]="size"
+                [tuiTextfieldFiller]="filler"
                 [pseudoActive]="pseudoPressed"
                 [pseudoFocus]="pseudoFocused"
                 [pseudoHover]="pseudoHovered"
@@ -68,12 +69,13 @@
                 [tuiTextfieldIcon]="iconContent"
                 [tuiTextfieldIconLeft]="iconLeft"
                 [readOnly]="readOnly"
-                [prefix]="prefix"
-                [postfix]="postfix"
+                [tuiTextfieldPrefix]="prefix"
+                [tuiTextfieldPostfix]="postfix"
                 [invalid]="invalid"
                 [tuiHintContent]="hintContent"
                 [tuiHintDirection]="hintDirection"
                 [tuiHintAppearance]="hintAppearance"
+                [style.text-align]="textAlign"
                 [(value)]="value"
             >
                 Component label
@@ -121,9 +123,12 @@
                 documentationPropertyName="filler"
                 documentationPropertyMode="input"
                 documentationPropertyType="string"
+                [documentationPropertyDeprecated]="true"
                 [(documentationPropertyValue)]="filler"
             >
-                Gray background text as a hint (e.g. HH:MM:SS for time)
+                Pale text suggestion for input (e.g. HH:MM:SS for time). Use
+                <code>tuiTextfieldFiller</code>
+                instead
             </ng-template>
             <ng-template
                 i18n
@@ -150,6 +155,7 @@
                 documentationPropertyName="prefix"
                 documentationPropertyMode="input"
                 documentationPropertyType="string"
+                [documentationPropertyDeprecated]="true"
                 [(documentationPropertyValue)]="prefix"
             >
                 Uneditable text before value. For example, currency symbol in
@@ -166,6 +172,7 @@
                 documentationPropertyName="postfix"
                 documentationPropertyMode="input"
                 documentationPropertyType="string"
+                [documentationPropertyDeprecated]="true"
                 [(documentationPropertyValue)]="postfix"
             >
                 Uneditable text after value. For example, currency symbol in
@@ -208,6 +215,18 @@
         <hint-controller-documentation></hint-controller-documentation>
         <textfield-controller-documentation></textfield-controller-documentation>
         <inherited-documentation></inherited-documentation>
+        <tui-doc-documentation heading="CSS customization">
+            <ng-template
+                i18n
+                documentationPropertyMode="input"
+                documentationPropertyType="string"
+                documentationPropertyName="style.text-align"
+                [documentationPropertyValues]="textAlignVariants"
+                [(documentationPropertyValue)]="textAlign"
+            >
+                Custom align content by text-align
+            </ng-template>
+        </tui-doc-documentation>
     </ng-template>
 
     <ng-template pageTab>

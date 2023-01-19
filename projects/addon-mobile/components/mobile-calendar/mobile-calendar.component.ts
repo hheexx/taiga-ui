@@ -7,12 +7,14 @@ import {
     Inject,
     Input,
     Output,
+    Self,
     ViewChild,
 } from '@angular/core';
 import {
     ALWAYS_FALSE_HANDLER,
     MONTHS_IN_YEAR,
     TUI_FIRST_DAY,
+    TUI_IS_CYPRESS,
     TUI_IS_IOS,
     TUI_LAST_DAY,
     TuiBooleanHandler,
@@ -20,11 +22,12 @@ import {
     TuiDayRange,
     tuiDefaultProp,
     TuiDestroyService,
+    TuiInjectionTokenType,
     TuiMapper,
     TuiMonth,
     tuiTypedFromEvent,
 } from '@taiga-ui/cdk';
-import {TUI_CLOSE_WORD, TUI_ORDERED_SHORT_WEEK_DAYS} from '@taiga-ui/core';
+import {TUI_CLOSE_WORD, TUI_SHORT_WEEK_DAYS} from '@taiga-ui/core';
 import {
     TUI_CANCEL_WORD,
     TUI_CHOOSE_DAY_OR_RANGE_TEXTS,
@@ -35,10 +38,9 @@ import {
     debounceTime,
     delay,
     filter,
-    flatMap,
     map,
+    mergeMap,
     switchMap,
-    switchMapTo,
     take,
     takeUntil,
     windowToggle,
@@ -56,18 +58,18 @@ import {
 } from './mobile-calendar.providers';
 
 @Component({
-    selector: `tui-mobile-calendar`,
-    templateUrl: `./mobile-calendar.template.html`,
-    styleUrls: [`./mobile-calendar.style.less`],
+    selector: 'tui-mobile-calendar',
+    templateUrl: './mobile-calendar.template.html',
+    styleUrls: ['./mobile-calendar.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: TUI_MOBILE_CALENDAR_PROVIDERS,
-    host: {'[class._ios]': `isIOS`},
+    host: {'[class._ios]': 'isIOS'},
 })
 export class TuiMobileCalendarComponent {
-    @ViewChild(`yearsScrollRef`)
+    @ViewChild('yearsScrollRef')
     private readonly yearsScrollRef?: CdkVirtualScrollViewport;
 
-    @ViewChild(`monthsScrollRef`)
+    @ViewChild('monthsScrollRef')
     private readonly monthsScrollRef?: CdkVirtualScrollViewport;
 
     private readonly today = TuiDay.currentLocal();
@@ -94,7 +96,7 @@ export class TuiMobileCalendarComponent {
     readonly cancel = new EventEmitter<void>();
 
     @Output()
-    readonly confirm = new EventEmitter<TuiDayRange | TuiDay>();
+    readonly confirm = new EventEmitter<TuiDay | TuiDayRange>();
 
     value: TuiDay | TuiDayRange | null = null;
 
@@ -111,17 +113,17 @@ export class TuiMobileCalendarComponent {
 
     constructor(
         @Inject(TUI_IS_IOS) readonly isIOS: boolean,
+        @Inject(TUI_IS_CYPRESS) readonly isCypress: boolean,
         @Inject(DOCUMENT) private readonly documentRef: Document,
+        @Self()
         @Inject(TuiDestroyService)
         private readonly destroy$: TuiDestroyService,
         @Inject(TUI_VALUE_STREAM) valueChanges: Observable<TuiDayRange | null>,
         @Inject(TUI_CLOSE_WORD) readonly closeWord$: Observable<string>,
         @Inject(TUI_CANCEL_WORD) readonly cancelWord$: Observable<string>,
         @Inject(TUI_DONE_WORD) readonly doneWord$: Observable<string>,
-        @Inject(TUI_ORDERED_SHORT_WEEK_DAYS)
-        readonly weekDays$: Observable<
-            [string, string, string, string, string, string, string]
-        >,
+        @Inject(TUI_SHORT_WEEK_DAYS)
+        readonly unorderedWeekDays$: TuiInjectionTokenType<typeof TUI_SHORT_WEEK_DAYS>,
         @Inject(TUI_CHOOSE_DAY_OR_RANGE_TEXTS)
         readonly chooseDayOrRangeTexts$: Observable<[string, string]>,
     ) {
@@ -173,11 +175,11 @@ export class TuiMobileCalendarComponent {
 
     getState(index: number): 'active' | 'adjacent' | null {
         if (this.isYearActive(index)) {
-            return `active`;
+            return 'active';
         }
 
         if (this.isYearActive(index - 1) || this.isYearActive(index + 1)) {
-            return `adjacent`;
+            return 'adjacent';
         }
 
         return null;
@@ -208,7 +210,7 @@ export class TuiMobileCalendarComponent {
 
         this.activeMonth += this.getMonthOffset(year);
         this.activeYear = year;
-        this.scrollToActiveYear(`smooth`);
+        this.scrollToActiveYear('smooth');
 
         // Delay is required to run months scroll in the next frame to prevent flicker
         setTimeout(() => {
@@ -287,15 +289,15 @@ export class TuiMobileCalendarComponent {
 
         const touchstart$ = tuiTypedFromEvent(
             yearsScrollRef.elementRef.nativeElement,
-            `touchstart`,
+            'touchstart',
         );
         const touchend$ = tuiTypedFromEvent(
             yearsScrollRef.elementRef.nativeElement,
-            `touchend`,
+            'touchend',
         );
         const click$ = tuiTypedFromEvent(
             yearsScrollRef.elementRef.nativeElement,
-            `click`,
+            'click',
         );
 
         // Refresh activeYear
@@ -304,7 +306,7 @@ export class TuiMobileCalendarComponent {
             .pipe(
                 // Ignore smooth scroll resulting from click on the exact year
                 windowToggle(touchstart$, () => click$),
-                flatMap(x => x),
+                mergeMap(x => x),
                 // Delay is required to run months scroll in the next frame to prevent flicker
                 delay(0),
                 map(
@@ -329,7 +331,7 @@ export class TuiMobileCalendarComponent {
             .pipe(
                 switchMap(() => touchend$),
                 switchMap(() =>
-                    race<unknown>(
+                    race(
                         yearsScrollRef.elementScrolled(),
                         timer(SCROLL_DEBOUNCE_TIME),
                     ).pipe(
@@ -340,9 +342,7 @@ export class TuiMobileCalendarComponent {
                 ),
                 takeUntil(this.destroy$),
             )
-            .subscribe(() => {
-                this.scrollToActiveYear(`smooth`);
-            });
+            .subscribe(() => this.scrollToActiveYear('smooth'));
     }
 
     private initMonthScroll(): void {
@@ -354,20 +354,20 @@ export class TuiMobileCalendarComponent {
 
         const touchstart$ = tuiTypedFromEvent(
             monthsScrollRef.elementRef.nativeElement,
-            `touchstart`,
+            'touchstart',
             {passive: true},
         );
         const touchend$ = tuiTypedFromEvent(
             monthsScrollRef.elementRef.nativeElement,
-            `touchend`,
+            'touchend',
         );
 
         // Smooth scroll to the closest month after scrolling is done
         touchstart$
             .pipe(
-                switchMapTo(touchend$),
-                switchMapTo(
-                    race<unknown>(
+                switchMap(() => touchend$),
+                switchMap(() =>
+                    race(
                         monthsScrollRef.elementScrolled(),
                         timer(SCROLL_DEBOUNCE_TIME),
                     ).pipe(
@@ -378,20 +378,21 @@ export class TuiMobileCalendarComponent {
                 ),
                 takeUntil(this.destroy$),
             )
-            .subscribe(() => {
-                this.scrollToActiveMonth(`smooth`);
-            });
+            .subscribe(() => this.scrollToActiveMonth('smooth'));
     }
 
-    private scrollToActiveYear(behavior?: ScrollBehavior): void {
+    private scrollToActiveYear(behavior: ScrollBehavior = 'auto'): void {
         this.yearsScrollRef?.scrollToIndex(
             Math.max(this.activeYear - STARTING_YEAR - 2, 0),
-            behavior,
+            this.isCypress ? 'auto' : behavior,
         );
     }
 
-    private scrollToActiveMonth(behavior?: ScrollBehavior): void {
-        this.monthsScrollRef?.scrollToIndex(this.activeMonth, behavior);
+    private scrollToActiveMonth(behavior: ScrollBehavior = 'auto'): void {
+        this.monthsScrollRef?.scrollToIndex(
+            this.activeMonth,
+            this.isCypress ? 'auto' : behavior,
+        );
     }
 
     private isYearActive(index: number): boolean {

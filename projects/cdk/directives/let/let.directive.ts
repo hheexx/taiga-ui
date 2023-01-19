@@ -7,7 +7,7 @@ import {TuiLetContext} from './let-context';
  * the result of pipes calculation (i.e. async pipe)
  */
 @Directive({
-    selector: `[tuiLet]`,
+    selector: '[tuiLet]',
 })
 export class TuiLetDirective<T> {
     @Input()
@@ -29,7 +29,7 @@ export class TuiLetDirective<T> {
     static ngTemplateContextGuard<T>(
         _dir: TuiLetDirective<T>,
         _ctx: unknown,
-    ): _ctx is TuiLetDirective<T> {
+    ): _ctx is TuiLetContext<T> {
         return true;
     }
 }

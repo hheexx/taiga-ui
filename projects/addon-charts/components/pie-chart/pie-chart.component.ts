@@ -1,4 +1,4 @@
-import {Location} from '@angular/common';
+import {Location as NgLocation} from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -10,6 +10,8 @@ import {
     Output,
 } from '@angular/core';
 import {SafeValue} from '@angular/platform-browser';
+import {LOCATION} from '@ng-web-apis/common';
+import {tuiPrepareExternalUrl} from '@taiga-ui/addon-charts/utils';
 import {
     TuiContextWithImplicit,
     tuiDefaultProp,
@@ -17,15 +19,20 @@ import {
     tuiPure,
     tuiSum,
 } from '@taiga-ui/cdk';
-import {TuiHintOptionsDirective, TuiSizeXL, TuiSizeXS} from '@taiga-ui/core';
+import {
+    TuiHintOptionsDirective,
+    tuiHintOptionsProvider,
+    TuiSizeXL,
+    TuiSizeXS,
+} from '@taiga-ui/core';
 import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
 const RADII = {
-    xs: `50`,
-    s: `50`,
-    m: `77.8`,
-    l: `81.9`,
-    xl: `81.3`,
+    xs: '50',
+    s: '50',
+    m: '77.8',
+    l: '81.9',
+    xl: '81.3',
 };
 const TRANSFORM = {
     xs: 1.15,
@@ -36,10 +43,13 @@ const TRANSFORM = {
 };
 
 @Component({
-    selector: `tui-pie-chart`,
-    templateUrl: `./pie-chart.template.html`,
-    styleUrls: [`./pie-chart.style.less`],
+    selector: 'tui-pie-chart',
+    templateUrl: './pie-chart.template.html',
+    styleUrls: ['./pie-chart.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    viewProviders: [
+        tuiHintOptionsProvider({direction: 'top-right', appearance: 'onDark'}),
+    ],
 })
 export class TuiPieChartComponent {
     private readonly autoIdString: string;
@@ -49,9 +59,9 @@ export class TuiPieChartComponent {
     value: readonly number[] = [];
 
     @Input()
-    @HostBinding(`attr.data-size`)
+    @HostBinding('attr.data-size')
     @tuiDefaultProp()
-    size: TuiSizeXS | TuiSizeXL = `m`;
+    size: TuiSizeXL | TuiSizeXS = 'm';
 
     @Input()
     @tuiDefaultProp()
@@ -66,7 +76,8 @@ export class TuiPieChartComponent {
 
     constructor(
         @Inject(TuiIdService) idService: TuiIdService,
-        @Inject(Location) private readonly locationRef: Location,
+        @Inject(NgLocation) private readonly ngLocation: NgLocation,
+        @Inject(LOCATION) private readonly locationRef: Location,
         @Optional()
         @Inject(TuiHintOptionsDirective)
         private readonly hintOptions: TuiHintOptionsDirective | null,
@@ -79,13 +90,13 @@ export class TuiPieChartComponent {
         }
     }
 
-    @HostBinding(`class._empty`)
+    @HostBinding('class._empty')
     get empty(): boolean {
         return !this.getSum(this.value);
     }
 
     get hintContent(): PolymorpheusContent<TuiContextWithImplicit<number>> {
-        return this.hintOptions?.content || ``;
+        return this.hintOptions?.content || '';
     }
 
     get maskId(): string {
@@ -94,9 +105,7 @@ export class TuiPieChartComponent {
 
     get mask(): string | null {
         return this.masked
-            ? `url(${this.locationRef.prepareExternalUrl(this.locationRef.path())}#${
-                  this.maskId
-              })`
+            ? tuiPrepareExternalUrl(this.ngLocation, this.locationRef, this.maskId)
             : null;
     }
 
@@ -121,7 +130,7 @@ export class TuiPieChartComponent {
     }
 
     getColor(index: number): SafeValue {
-        return `var(--tui-chart-${index}`;
+        return `var(--tui-chart-${index})`;
     }
 
     @tuiPure

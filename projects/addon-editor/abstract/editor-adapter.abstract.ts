@@ -1,4 +1,5 @@
 import {Directive} from '@angular/core';
+import {TuiEditorAttachedFile} from '@taiga-ui/addon-editor/interfaces';
 import type {Editor, Range} from '@tiptap/core';
 import type {EditorState} from 'prosemirror-state';
 import {Observable, Subject} from 'rxjs';
@@ -9,19 +10,20 @@ export abstract class AbstractTuiEditor {
     abstract readonly html: string;
     abstract editable: boolean;
 
-    readonly stateChange$ = new Subject();
+    readonly stateChange$ = new Subject<void>();
     readonly valueChange$ = new Subject<string>();
 
     abstract get state(): EditorState;
 
-    abstract isActive$(name: string | Record<string, string>): Observable<boolean>;
+    abstract isActive$(name: Record<string, string> | string): Observable<boolean>;
 
-    abstract isActive(name: string | Record<string, string>): boolean;
+    abstract isActive(name: Record<string, string> | string): boolean;
     abstract undoDisabled(): boolean;
     abstract redoDisabled(): boolean;
     abstract getFontColor(): string;
     abstract getBackgroundColor(): string;
     abstract getCellColor(): string;
+    abstract getGroupColor(): string;
     abstract onAlign(align: string): void;
     abstract setImage(src: string): void;
     abstract undo(): void;
@@ -58,7 +60,7 @@ export abstract class AbstractTuiEditor {
     abstract setHeading(level: number): void;
     abstract setParagraph(options?: {fontSize: string}): void;
     abstract setHardBreak(): void;
-    abstract setTextSelection(value: number | Range): void;
+    abstract setTextSelection(value: Range | number): void;
     abstract toggleLink(href: string): void;
     abstract setLink(href: string): void;
     abstract unsetLink(): void;
@@ -72,5 +74,9 @@ export abstract class AbstractTuiEditor {
     abstract setDetails(): void;
     abstract removeDetails(): void;
     abstract setGroup(): void;
+    abstract setGroupHilite(color: string): void;
     abstract removeGroup(): void;
+    abstract setAnchor(id: string): void;
+    abstract removeAnchor(): void;
+    abstract setFileLink(preview: TuiEditorAttachedFile): void;
 }

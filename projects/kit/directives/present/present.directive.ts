@@ -7,14 +7,14 @@ import {
     Output,
 } from '@angular/core';
 import {USER_AGENT} from '@ng-web-apis/common';
-import {tuiIsCurrentTarget, tuiIsFirefox} from '@taiga-ui/cdk';
+import {tuiIsFirefox} from '@taiga-ui/cdk';
 import {BehaviorSubject} from 'rxjs';
 import {distinctUntilChanged, skip} from 'rxjs/operators';
 
 @Directive({
-    selector: `[tuiPresentChange]`,
+    selector: '[tuiPresentChange]',
     host: {
-        '[style.animation]': `"tuiPresent 1s infinite"`,
+        '[style.animation]': '"tuiPresent 1s infinite"',
     },
 })
 export class TuiPresentDirective implements OnDestroy {
@@ -43,7 +43,7 @@ export class TuiPresentDirective implements OnDestroy {
 
         observer.observe(nativeElement, {
             attributes: true,
-            attributeFilter: [`style`, `class`],
+            attributeFilter: ['style', 'class'],
         });
     }
 
@@ -58,12 +58,10 @@ export class TuiPresentDirective implements OnDestroy {
      *** Chrome 83+
      * See: {@link https://caniuse.com/mdn-api_window_animationcancel_event}
      */
-    @HostListener(`animationcancel`, [`$event`, `false`])
-    @HostListener(`animationstart`, [`$event`, `true`])
-    onAnimation(event: Event, visibility: boolean): void {
-        if (tuiIsCurrentTarget(event)) {
-            this.visibility$.next(visibility);
-        }
+    @HostListener('animationcancel.self', ['false'])
+    @HostListener('animationstart.self', ['true'])
+    onAnimation(visibility: boolean): void {
+        this.visibility$.next(visibility);
     }
 
     ngOnDestroy(): void {

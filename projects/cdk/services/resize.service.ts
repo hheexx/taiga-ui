@@ -1,4 +1,4 @@
-import {ElementRef, Inject, Injectable, NgZone} from '@angular/core';
+import {ElementRef, Inject, Injectable, NgZone, Self} from '@angular/core';
 import {ANIMATION_FRAME} from '@ng-web-apis/common';
 import {
     RESIZE_OBSERVER_SUPPORT,
@@ -13,7 +13,7 @@ import {
     debounceTime,
     distinctUntilChanged,
     map,
-    mapTo,
+    share,
     takeUntil,
     throttleTime,
 } from 'rxjs/operators';
@@ -25,7 +25,7 @@ export class TuiResizeService extends ResizeObserverService {
     constructor(
         @Inject(ElementRef) elementRef: ElementRef<HTMLElement>,
         @Inject(NgZone) ngZone: NgZone,
-        @Inject(TuiDestroyService) destroy$: Observable<void>,
+        @Self() @Inject(TuiDestroyService) destroy$: Observable<void>,
         @Inject(RESIZE_OBSERVER_SUPPORT) support: boolean,
         @Inject(RESIZE_OPTION_BOX) box: ResizeObserverBoxOptions,
         @Inject(ANIMATION_FRAME) animationFrame$: Observable<number>,
@@ -34,6 +34,10 @@ export class TuiResizeService extends ResizeObserverService {
 
         return this.pipe(
             catchError(() =>
+                /**
+                 * @note: if not supported ResizeObserver
+                 * remove `catchError` after supports modern browsers
+                 */
                 animationFrame$.pipe(
                     throttleTime(POLLING_TIME),
                     map(
@@ -41,11 +45,12 @@ export class TuiResizeService extends ResizeObserverService {
                             `${elementRef.nativeElement.clientWidth} ${elementRef.nativeElement.clientHeight}`,
                     ),
                     distinctUntilChanged(),
-                    mapTo(EMPTY_ARRAY),
+                    map(() => EMPTY_ARRAY),
                 ),
             ),
             debounceTime(0),
             tuiZonefree(ngZone),
+            share(),
             takeUntil(destroy$),
         );
     }

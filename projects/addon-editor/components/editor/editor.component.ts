@@ -1,12 +1,15 @@
+import {DOCUMENT} from '@angular/common';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     ElementRef,
+    EventEmitter,
     Inject,
     Input,
     OnDestroy,
     Optional,
+    Output,
     Self,
     ViewChild,
 } from '@angular/core';
@@ -19,7 +22,9 @@ import {
     TuiTiptapEditorService,
 } from '@taiga-ui/addon-editor/directives';
 import {TuiEditorTool} from '@taiga-ui/addon-editor/enums';
+import {TuiEditorAttachedFile} from '@taiga-ui/addon-editor/interfaces';
 import {TIPTAP_EDITOR, TUI_EDITOR_CONTENT_PROCESSOR} from '@taiga-ui/addon-editor/tokens';
+import {tuiIsSafeLinkRange} from '@taiga-ui/addon-editor/utils';
 import {
     AbstractTuiControl,
     ALWAYS_FALSE_HANDLER,
@@ -35,9 +40,9 @@ import {Observable} from 'rxjs';
 import {TUI_EDITOR_PROVIDERS} from './editor.providers';
 
 @Component({
-    selector: `tui-editor`,
-    templateUrl: `./editor.component.html`,
-    styleUrls: [`./editor.style.less`],
+    selector: 'tui-editor',
+    templateUrl: './editor.component.html',
+    styleUrls: ['./editor.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [tuiAsFocusableItemAccessor(TuiEditorComponent), TUI_EDITOR_PROVIDERS],
 })
@@ -50,11 +55,14 @@ export class TuiEditorComponent
 
     @Input()
     @tuiDefaultProp()
-    exampleText = ``;
+    exampleText = '';
 
     @Input()
     @tuiDefaultProp()
     tools: readonly TuiEditorTool[] = defaultEditorTools;
+
+    @Output()
+    fileAttached = new EventEmitter<TuiEditorAttachedFile[]>();
 
     @ViewChild(TuiToolbarComponent)
     readonly toolbar?: TuiToolbarComponent;
@@ -71,6 +79,8 @@ export class TuiEditorComponent
         @Inject(TuiTiptapEditorService) readonly editorService: AbstractTuiEditor,
         @Inject(TUI_EDITOR_CONTENT_PROCESSOR)
         private readonly contentProcessor: TuiStringHandler<string>,
+        @Inject(DOCUMENT)
+        private readonly documentRef: Document,
     ) {
         super(control, changeDetectorRef);
     }
@@ -98,7 +108,7 @@ export class TuiEditorComponent
     }
 
     override writeValue(value: string | null): void {
-        const processed = this.contentProcessor(value || ``);
+        const processed = this.contentProcessor(value || '');
 
         super.writeValue(processed);
 
@@ -116,6 +126,14 @@ export class TuiEditorComponent
         this.updateValue(value);
     }
 
+    addAnchor(anchor: string): void {
+        this.editor?.setAnchor(anchor);
+    }
+
+    removeAnchor(): void {
+        this.editor?.removeAnchor();
+    }
+
     addLink(link: string): void {
         this.editor?.selectClosest();
         this.editor?.setLink(link);
@@ -130,11 +148,23 @@ export class TuiEditorComponent
     }
 
     protected getFallbackValue(): string {
-        return ``;
+        return '';
     }
 
-    private readonly isSelectionLink = ({startContainer, endContainer}: Range): boolean =>
-        !!startContainer.parentElement?.closest(`a`)?.contains(endContainer);
+    private readonly isSelectionLink = (range: Range): boolean =>
+        this.currentFocusedNodeIsAnchor(range) && tuiIsSafeLinkRange(range);
+
+    /**
+     * @description:
+     * The commonAncestorContainer not always relevant node element in Range,
+     * so the focusNode is used for the correct behaviour from the selection,
+     * which is the actual element at the moment
+     */
+    private currentFocusedNodeIsAnchor(range: Range): boolean {
+        return !!range.startContainer.parentElement
+            ?.closest('a')
+            ?.contains(this.documentRef.getSelection()?.focusNode || null);
+    }
 
     private get hasValue(): boolean {
         return !!this.value;

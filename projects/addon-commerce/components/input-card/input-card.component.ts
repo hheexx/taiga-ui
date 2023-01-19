@@ -23,19 +23,20 @@ import {
     TuiFocusableElementAccessor,
 } from '@taiga-ui/cdk';
 import {TuiPrimitiveTextfieldComponent, TuiTextMaskOptions} from '@taiga-ui/core';
+import {PolymorpheusContent} from '@tinkoff/ng-polymorpheus';
 
 const icons: Record<TuiPaymentSystem, string> = {
-    mir: `tuiIconMir`,
-    visa: `tuiIconVisa`,
-    electron: `tuiIconElectron`,
-    mastercard: `tuiIconMastercard`,
-    maestro: `tuiIconMaestro`,
+    mir: 'tuiIconMir',
+    visa: 'tuiIconVisa',
+    electron: 'tuiIconElectron',
+    mastercard: 'tuiIconMastercard',
+    maestro: 'tuiIconMaestro',
 };
 
 @Component({
-    selector: `tui-input-card`,
-    templateUrl: `./input-card.template.html`,
-    styleUrls: [`./input-card.style.less`],
+    selector: 'tui-input-card',
+    templateUrl: './input-card.template.html',
+    styleUrls: ['./input-card.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         tuiAsFocusableItemAccessor(TuiInputCardComponent),
@@ -51,7 +52,7 @@ export class TuiInputCardComponent
 
     @Input()
     @tuiDefaultProp()
-    cardSrc: string | null = null;
+    cardSrc: PolymorpheusContent = '';
 
     @Input()
     @tuiDefaultProp()
@@ -76,6 +77,12 @@ export class TuiInputCardComponent
         super(control, changeDetectorRef);
     }
 
+    private get defaultCardIcon(): string | null {
+        const {paymentSystem} = this;
+
+        return paymentSystem ? icons[paymentSystem] : null;
+    }
+
     get nativeFocusableElement(): HTMLInputElement | null {
         return this.input ? this.input.nativeFocusableElement : null;
     }
@@ -84,18 +91,12 @@ export class TuiInputCardComponent
         return !!this.input && this.input.focused;
     }
 
-    get icon(): string | null {
-        if (this.cardSrc !== null) {
-            return this.cardSrc;
-        }
-
-        const {paymentSystem} = this;
-
-        return paymentSystem ? icons[paymentSystem] : null;
+    get icon(): PolymorpheusContent {
+        return this.cardSrc || this.defaultCardIcon;
     }
 
     get autocomplete(): TuiAutofillFieldName {
-        return this.autocompleteEnabled ? `cc-number` : `off`;
+        return this.autocompleteEnabled ? 'cc-number' : 'off';
     }
 
     get paymentSystem(): TuiPaymentSystem | null {
@@ -108,13 +109,13 @@ export class TuiInputCardComponent
 
     get formattedCard(): string {
         return this.value
-            .split(``)
+            .split('')
             .map((char, index) => (index && index % 4 === 0 ? ` ${char}` : char))
-            .join(``);
+            .join('');
     }
 
     onValueChange(value: string): void {
-        const parsed = value.split(` `).join(``);
+        const parsed = value.split(' ').join('');
         const currentBin = this.bin;
 
         this.updateValue(parsed);
@@ -143,6 +144,6 @@ export class TuiInputCardComponent
     }
 
     protected getFallbackValue(): string {
-        return ``;
+        return '';
     }
 }

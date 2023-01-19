@@ -1,12 +1,14 @@
 <button
     tuiButton
     size="s"
+    type="button"
     (click)="addColumn()"
 >
     Add column
 </button>
 <button
     tuiButton
+    type="button"
     size="s"
     class="tui-space_left-2"
     (click)="addRows()"
@@ -32,11 +34,12 @@
         </tr>
     </thead>
     <tbody
+        *tuiLet="data | tuiTableSort as sortedData"
         tuiTbody
-        [data]="data"
+        [data]="sortedData"
     >
         <tr
-            *tuiRow="let item of data"
+            *ngFor="let item of sortedData"
             tuiTr
         >
             <ng-container *ngFor="let col of columns">

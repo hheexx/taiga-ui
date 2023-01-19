@@ -10,30 +10,31 @@ import {
     TemplateRef,
 } from '@angular/core';
 import {ActivatedRoute, Params, UrlSerializer} from '@angular/router';
+import {tuiIsNumber} from '@taiga-ui/cdk';
 import {BehaviorSubject, Subject} from 'rxjs';
 
 import {tuiCoerceValue} from '../../utils/coerce-value';
 
-const SERIALIZED_SUFFIX = `$`;
+const SERIALIZED_SUFFIX = '$';
 
-export type DocumentationPropertyType = 'input' | 'output' | 'input-output' | null;
+export type DocumentationPropertyType = 'input-output' | 'input' | 'output' | null;
 
 // @bad TODO: refactor output and value sync
 @Directive({
-    selector: `ng-template[documentationPropertyName]`,
-    exportAs: `documentationProperty`,
+    selector: 'ng-template[documentationPropertyName]',
+    exportAs: 'documentationProperty',
 })
 export class TuiDocDocumentationPropertyConnectorDirective<T>
     implements OnInit, OnChanges
 {
     @Input()
-    documentationPropertyName = ``;
+    documentationPropertyName = '';
 
     @Input()
     documentationPropertyMode: DocumentationPropertyType = null;
 
     @Input()
-    documentationPropertyType = ``;
+    documentationPropertyType = '';
 
     @Input()
     documentationPropertyValue!: T;
@@ -64,11 +65,11 @@ export class TuiDocDocumentationPropertyConnectorDirective<T>
 
     get attrName(): string {
         switch (this.documentationPropertyMode) {
-            case `input`:
+            case 'input':
                 return `[${this.documentationPropertyName}]`;
-            case `output`:
+            case 'output':
                 return `(${this.documentationPropertyName})`;
-            case `input-output`:
+            case 'input-output':
                 return `[(${this.documentationPropertyName})]`;
             default:
                 return this.documentationPropertyName;
@@ -80,7 +81,7 @@ export class TuiDocDocumentationPropertyConnectorDirective<T>
     }
 
     get shouldShowValues(): boolean {
-        return this.documentationPropertyMode !== `output`;
+        return this.documentationPropertyMode !== 'output';
     }
 
     ngOnChanges(): void {
@@ -102,22 +103,26 @@ export class TuiDocDocumentationPropertyConnectorDirective<T>
 
     private parseParams(params: Params): void {
         const propertyValue: string | undefined = params[this.documentationPropertyName];
-        const propertyValueWithSuffix: string | number | undefined =
+        const propertyValueWithSuffix: number | string | undefined =
             params[`${this.documentationPropertyName}${SERIALIZED_SUFFIX}`];
 
         if (!propertyValue && !propertyValueWithSuffix) {
             return;
         }
 
-        const value =
+        let value =
             !!propertyValueWithSuffix && this.documentationPropertyValues
                 ? this.documentationPropertyValues[propertyValueWithSuffix as number]
                 : tuiCoerceValue(propertyValue);
 
+        if (this.documentationPropertyType === 'string' && tuiIsNumber(value)) {
+            value = value.toString();
+        }
+
         this.onValueChange(value as T);
     }
 
-    private setQueryParam(value: T | string | number | boolean | null): void {
+    private setQueryParam(value: T | boolean | number | string | null): void {
         const tree = this.urlSerializer.parse(this.locationRef.path());
 
         const isValueAvailableByKey = value instanceof Object;
@@ -126,7 +131,7 @@ export class TuiDocDocumentationPropertyConnectorDirective<T>
                 ? this.documentationPropertyValues.indexOf(value as T)
                 : value;
 
-        const suffix = isValueAvailableByKey ? SERIALIZED_SUFFIX : ``;
+        const suffix = isValueAvailableByKey ? SERIALIZED_SUFFIX : '';
         const propName = this.documentationPropertyName + suffix;
 
         tree.queryParams = {

@@ -16,15 +16,15 @@ export class TuiNativeInputPO {
         this.pageObject = new TuiPageObject(fixture);
     }
 
-    get nativeElement(): any {
-        return this.pageObject.getByAutomationId(
-            this.automationId,
-            this.hostDebugElement,
-        )!.nativeElement;
+    get nativeElement(): HTMLInputElement | HTMLTextAreaElement | null {
+        return (
+            this.pageObject.getByAutomationId(this.automationId, this.hostDebugElement)
+                ?.nativeElement ?? null
+        );
     }
 
     get value(): string {
-        return tuiReplaceNbsp(this.nativeElement.value);
+        return tuiReplaceNbsp(this.nativeElement?.value ?? ``);
     }
 
     get focused(): boolean {
@@ -32,10 +32,14 @@ export class TuiNativeInputPO {
     }
 
     sendText(value: string): void {
+        this.focus(); // need focus before initial value for emulate user interaction
+
         const nativeElement = this.nativeElement;
 
-        nativeElement.value = value;
-        nativeElement.dispatchEvent(new Event(`input`, {bubbles: true}));
+        if (nativeElement) {
+            nativeElement.value = value;
+            nativeElement.dispatchEvent(new Event(`input`, {bubbles: true}));
+        }
 
         this.fixture.detectChanges();
     }
@@ -48,22 +52,22 @@ export class TuiNativeInputPO {
     }
 
     sendKeydown(key: string): void {
-        this.nativeElement.dispatchEvent(tuiCreateKeyboardEvent(key, `keydown`));
+        this.nativeElement?.dispatchEvent(tuiCreateKeyboardEvent(key, `keydown`));
         this.fixture.detectChanges();
     }
 
     focus(): void {
-        this.nativeElement.focus();
+        this.nativeElement?.focus();
         this.fixture.detectChanges();
     }
 
     blur(): void {
-        this.nativeElement.blur();
+        this.nativeElement?.blur();
         this.fixture.detectChanges();
     }
 
     click(): void {
-        this.nativeElement.click();
+        this.nativeElement?.click();
         this.fixture.detectChanges();
     }
 }

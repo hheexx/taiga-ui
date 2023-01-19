@@ -13,19 +13,20 @@ import {
     TuiDay,
     TuiDayRange,
     tuiDefaultProp,
+    TuiHandler,
+    TuiInjectionTokenType,
     TuiMonth,
     tuiNullableSame,
 } from '@taiga-ui/cdk';
 import {TUI_DEFAULT_MARKER_HANDLER} from '@taiga-ui/core/constants';
 import {TuiInteractiveState, TuiRangeState} from '@taiga-ui/core/enums';
-import {TUI_ORDERED_SHORT_WEEK_DAYS, WEEK_DAYS_NAMES} from '@taiga-ui/core/tokens';
+import {TUI_DAY_TYPE_HANDLER, TUI_SHORT_WEEK_DAYS} from '@taiga-ui/core/tokens';
 import {TuiMarkerHandler} from '@taiga-ui/core/types';
-import {Observable} from 'rxjs';
 
 @Component({
-    selector: `tui-primitive-calendar`,
-    templateUrl: `./primitive-calendar.template.html`,
-    styleUrls: [`./primitive-calendar.style.less`],
+    selector: 'tui-primitive-calendar',
+    templateUrl: './primitive-calendar.template.html',
+    styleUrls: ['./primitive-calendar.style.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuiPrimitiveCalendarComponent {
@@ -46,7 +47,7 @@ export class TuiPrimitiveCalendarComponent {
 
     @Input()
     @tuiDefaultProp()
-    value: TuiDayRange | TuiDay | null = null;
+    value: TuiDay | TuiDayRange | null = null;
 
     @Input()
     @tuiDefaultProp()
@@ -63,11 +64,13 @@ export class TuiPrimitiveCalendarComponent {
     readonly dayClick = new EventEmitter<TuiDay>();
 
     constructor(
-        @Inject(TUI_ORDERED_SHORT_WEEK_DAYS)
-        readonly weekDays$: Observable<WEEK_DAYS_NAMES>,
+        @Inject(TUI_SHORT_WEEK_DAYS)
+        readonly unorderedWeekDays$: TuiInjectionTokenType<typeof TUI_SHORT_WEEK_DAYS>,
+        @Inject(TUI_DAY_TYPE_HANDLER)
+        readonly dayTypeHandler: TuiHandler<TuiDay, string>,
     ) {}
 
-    @HostBinding(`class._single`)
+    @HostBinding('class._single')
     get isSingle(): boolean {
         return (
             this.value !== null &&
@@ -79,7 +82,7 @@ export class TuiPrimitiveCalendarComponent {
         day: TuiDay,
         today: boolean,
         inRange: boolean,
-    ): null | [string] | [string, string] => {
+    ): [string, string] | [string] | null => {
         if (today || inRange) {
             return null;
         }

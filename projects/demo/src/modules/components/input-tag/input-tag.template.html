@@ -80,6 +80,21 @@
             </ng-template>
             <tui-input-tag-example-7></tui-input-tag-example-7>
         </tui-doc-example>
+
+        <tui-doc-example
+            id="expandable"
+            i18n-heading
+            heading="expandable"
+            [content]="example8"
+        >
+            <div class="tui-space_bottom-3">
+                You can limit the number of visible rows in expandable mode with
+                <code>rows</code>
+                input
+            </div>
+
+            <tui-input-tag-example-8></tui-input-tag-example-8>
+        </tui-doc-example>
     </ng-template>
 
     <ng-template pageTab>
@@ -92,6 +107,7 @@
                     [tuiDropdownLimitWidth]="dropdownLimitWidth"
                     [tuiDropdownMinHeight]="dropdownMinHeight"
                     [tuiDropdownMaxHeight]="dropdownMaxHeight"
+                    [tuiDropdownOffset]="dropdownOffset"
                     [tuiHintContent]="hintContent"
                     [tuiHintDirection]="hintDirection"
                     [tuiHintAppearance]="hintAppearance"
@@ -100,6 +116,8 @@
                     [tuiTextfieldCleaner]="cleaner"
                     [tuiTextfieldLabelOutside]="labelOutside"
                     [tuiTextfieldSize]="size"
+                    [maxLength]="maxLength"
+                    [rows]="rows"
                     [focusable]="focusable"
                     [disabledItemHandler]="disabledItemHandler"
                     [editable]="editable"
@@ -113,6 +131,7 @@
                     [pseudoActive]="pseudoPressed"
                     [pseudoFocus]="pseudoFocused"
                     [pseudoInvalid]="pseudoInvalid"
+                    [style.text-align]="textAlign"
                     [(search)]="search"
                 >
                     Please enter Pythons' names
@@ -140,6 +159,15 @@
                 Textfield value to subscribe on input or setting it from the outside (emits
                 <code>null</code>
                 when item from list selected)
+            </ng-template>
+            <ng-template
+                i18n
+                documentationPropertyName="maxLength"
+                documentationPropertyMode="input"
+                documentationPropertyType="number"
+                [(documentationPropertyValue)]="maxLength"
+            >
+                Max length of tag
             </ng-template>
             <ng-template
                 i18n
@@ -189,6 +217,17 @@
             </ng-template>
             <ng-template
                 i18n
+                documentationPropertyName="rows"
+                documentationPropertyMode="input"
+                documentationPropertyType="number"
+                [(documentationPropertyValue)]="rows"
+            >
+                A number of visible rows in
+                <code>expandable</code>
+                mode
+            </ng-template>
+            <ng-template
+                i18n
                 documentationPropertyName="inputHidden"
                 documentationPropertyMode="input"
                 documentationPropertyType="boolean"
@@ -224,6 +263,18 @@
             </ng-template>
         </tui-doc-documentation>
         <inherited-documentation [dropdown]="true"></inherited-documentation>
+        <tui-doc-documentation heading="CSS customization">
+            <ng-template
+                i18n
+                documentationPropertyMode="input"
+                documentationPropertyType="string"
+                documentationPropertyName="style.text-align"
+                [documentationPropertyValues]="textAlignVariants"
+                [(documentationPropertyValue)]="textAlign"
+            >
+                Custom align content by text-align
+            </ng-template>
+        </tui-doc-documentation>
     </ng-template>
 
     <ng-template pageTab>
